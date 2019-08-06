@@ -1,7 +1,7 @@
 # Личный проект «Менеджер задач» [![Build status][travis-image]][travis-url]
 
 * Студент: [Владимир Ковалкин](https://up.htmlacademy.ru/ecmascript/9/user/905973).
-* Наставник: `Сергей Вохмянин`.
+* Наставник: [Сергей Вохмянин](https://htmlacademy.ru/profile/id530823).
 
 ---
 
