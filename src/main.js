@@ -1,3 +1,5 @@
+'use strict';
+
 const getMenuMarkup = () =>
   `<section class="control__btn-wrap">
     <input
@@ -464,9 +466,9 @@ const getCardMarkup = () =>
 const getLoadMoreButtonMarkup = () =>
   `<button class="load-more" type="button">load more</button>`;
 
-const componentRendering = function(containerName, markup) {
-  const container = document.querySelector(`${containerName}`)
-  let tempDiv = document.createElement('div');
+const componentRendering = (containerName, markup) => {
+  const container = document.querySelector(`${containerName}`);
+  let tempDiv = document.createElement(`div`);
   tempDiv.innerHTML = `${markup}`;
   container.append(tempDiv.childNodes[0]);
 };
