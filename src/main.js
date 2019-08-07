@@ -467,10 +467,11 @@ const getLoadMoreButtonMarkup = () =>
   `<button class="load-more" type="button">load more</button>`;
 
 const componentRendering = (containerName, markup) => {
-  const container = document.querySelector(`${containerName}`);
   let tempDiv = document.createElement(`div`);
   tempDiv.innerHTML = `${markup}`;
-  container.append(tempDiv.childNodes[0]);
+  for (let i = 0; i < tempDiv.children.length; i++) {
+    containerName.append(tempDiv.children[i]);
+  }
 };
 
 const multipleComponentRendering = (containerName, markup, multiplyAmount) => {
@@ -479,10 +480,17 @@ const multipleComponentRendering = (containerName, markup, multiplyAmount) => {
   }
 };
 
-componentRendering(`.control`, getMenuMarkup());
-componentRendering(`main`, getSearchMarkup());
-componentRendering(`main`, getFilterMarkup());
-componentRendering(`main`, getBoardMarkup());
-componentRendering(`.board`, getLoadMoreButtonMarkup());
-componentRendering(`.board__tasks`, getEditCardFormMarkup());
-multipleComponentRendering(`.board__tasks`, getCardMarkup(), 3);
+const menuContainer = document.querySelector(`.control`);
+componentRendering(menuContainer, getMenuMarkup());
+
+const mainContainer = document.querySelector(`.main`);
+componentRendering(mainContainer, getSearchMarkup());
+componentRendering(mainContainer, getFilterMarkup());
+componentRendering(mainContainer, getBoardMarkup());
+
+const boardContainer = document.querySelector(`.board`);
+componentRendering(boardContainer, getLoadMoreButtonMarkup());
+
+const boardTasks = document.querySelector(`.board__tasks`);
+componentRendering(boardTasks, getEditCardFormMarkup());
+multipleComponentRendering(boardTasks, getCardMarkup(), 3);
