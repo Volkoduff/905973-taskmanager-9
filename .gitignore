@@ -12,7 +12,7 @@ Thumbs.db
 node_modules/
 
 # Файлы сборки
-public/bundle.js
+public/bundle.js*
 
 # Папка с собранными файлами проекта
 build/
