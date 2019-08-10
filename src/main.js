@@ -1,10 +1,10 @@
-import {getMenuMarkup} from './components/menu.js';
-import {getSearchMarkup} from './components/search.js';
-import {getFilterMarkup} from './components/filter.js';
-import {getBoardMarkup} from './components/board.js';
-import {getTaskEditMarkup} from './components/task-edit.js';
-import {getTaskMarkup} from './components/task.js';
-import {getLoadMoreButtonMarkup} from './components/load-more-button.js';
+import {getMenuMarkup} from './components/menu';
+import {getSearchMarkup} from './components/search';
+import {getFilterMarkup} from './components/filter';
+import {getBoardMarkup} from './components/board';
+import {getTaskEditMarkup} from './components/task-edit';
+import {getTaskMarkup} from './components/task';
+import {getLoadMoreButtonMarkup} from './components/load-more-button';
 
 const getArrayWithElementsFromMarkup = (markup) => {
   let tempDiv = document.createElement(`div`);
