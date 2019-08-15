@@ -1,15 +1,14 @@
-export const getTaskEditMarkup = () =>
-  `<article class="card card--edit card--yellow card--repeat">
+export const getTaskEditMarkup = ({description, tags, color, dueDate, repeatingDays, isFavorite, isArchive}) =>
+  `<article class="card card--edit card--${color} ${Object.keys(repeatingDays).some((day) => repeatingDays[day]) ? `card--repeat` : ``}">
   <form class="card__form" method="get">
     <div class="card__inner">
       <div class="card__control">
-        <button type="button" class="card__btn card__btn--archive">
+        <button type="button" class="card__btn card__btn--archive ${isArchive ? `` : `card__btn--disabled`} ">
           archive
         </button>
         <button
           type="button"
-          class="card__btn card__btn--favorites card__btn--disabled"
-        >
+          class="card__btn card__btn--favorites ${isFavorite ? `` : `card__btn--disabled`} ">
           favorites
         </button>
       </div>
@@ -26,7 +25,7 @@ export const getTaskEditMarkup = () =>
             class="card__text"
             placeholder="Start typing your text here..."
             name="text"
-          >Here is a card with filled data</textarea>
+          >${description}</textarea>
         </label>
       </div>
 
