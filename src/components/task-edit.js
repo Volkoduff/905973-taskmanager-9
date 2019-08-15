@@ -1,4 +1,4 @@
-export const getTaskEditMarkup = ({description, tags, color, dueDate, repeatingDays, isFavorite, isArchive}) =>
+export const getTaskEditMarkup = ({description, color, repeatingDays, isFavorite, isArchive}) =>
   `<article class="card card--edit card--${color} ${Object.keys(repeatingDays).some((day) => repeatingDays[day]) ? `card--repeat` : ``}">
   <form class="card__form" method="get">
     <div class="card__inner">
