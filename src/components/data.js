@@ -1,76 +1,72 @@
+const MAX_TAGS = 3;
+
+const colors = [`black`,
+  `yellow`,
+  `blue`,
+  `green`,
+  `pink`,
+];
+const tagNames = [
+  `homework`,
+  `theory`,
+  `practice`,
+  `intensive`,
+  `keks`,
+  `task`,
+  `learning`,
+];
+const taskTitles = [
+  `Изучить теорию`,
+  `Сделать домашку`,
+  `Пройти интенсив на соточку`,
+];
+const RandomFn = {
+  getRandomElementFromArray: (array) => array[Math.floor(Math.random() * array.length)],
+  getSeveralRandomElementsFromArray: (array) => array.sort(() => 0.5 - Math.random()).slice(0, Math.floor(Math.random() * MAX_TAGS + 1)),
+  getRandomWeekTime: () => 1 + Math.floor(Math.random() * 7) * 24 * 60 * 60 * 1000,
+  getRandomBoolean: () => Boolean(Math.round(Math.random())),
+  getRandomWeekDayMarker: (task) => Object.keys(task.repeatingDays).some((day) => task.repeatingDays[day])
+};
+
 export const getTaskData = () => ({
-  description: [
-    `Изучить теорию`,
-    `Сделать домашку`,
-    `Пройти интенсив на соточку`,
-  ][Math.floor(Math.random() * 3)],
-  dueDate: Date.now() + 1 + Math.floor(Math.random() * 7) * 24 * 60 * 60 * 1000,
-  tags: new Set([
-    `homework`,
-    `theory`,
-    `practice`,
-    `intensive`,
-    `keks`,
-    `task`,
-    `learning`,
-  ]),
+  description: RandomFn.getRandomElementFromArray(taskTitles),
+  dueDate: Date.now() + RandomFn.getRandomWeekTime(),
+  tags: new Set(RandomFn.getSeveralRandomElementsFromArray(tagNames)),
   repeatingDays: {
     'mo': false,
-    'tu': Boolean(Math.round(Math.random())),
+    'tu': RandomFn.getRandomBoolean(),
     'we': false,
     'th': false,
     'fr': false,
     'sa': false,
     'su': false,
   },
-  color: [
-    `black`,
-    `yellow`,
-    `blue`,
-    `green`,
-    `pink`,
-  ][Math.floor(Math.random() * 5)],
-  isFavorite: Boolean(Math.round(Math.random())),
-  isArchive: Boolean(Math.round(Math.random())),
+  color: RandomFn.getRandomElementFromArray(colors),
+  isFavorite: RandomFn.getRandomBoolean(),
+  isArchive: RandomFn.getRandomBoolean(),
 });
 
-export const filter = [{
+export const taskFilters = [{
   title: `All`,
-  get count() {
-    const tasks = document.querySelectorAll(`article`);
-    return tasks.length;
-  },
+  filter: () => true,
 }, {
   title: `OVERDUE`,
+  filter: () => false,
   count: 0,
 }, {
   title: `TODAY`,
+  filter: () => false,
   count: 0,
 }, {
   title: `FAVORITES`,
-  get count() {
-    let counter = 0;
-    Array.from(document.querySelectorAll(`article`))
-      .map((el) => el.querySelector(`.card__btn--favorites`).classList.contains(`card__btn--disabled`) ? counter : counter++);
-    return counter;
-  }
+  filter: (task) => task.isFavorite,
 }, {
   title: `REPEATING`,
-  get count() {
-    let counter = 0;
-    Array.from(document.querySelectorAll(`article`))
-      .map((el) => el.classList.contains(`card--repeat`) ? counter++ : counter);
-    return counter;
-  }
-}, {
-  title: `TAGS`,
-  count: Math.floor(Math.random() * 7),
+  filter: (task) => RandomFn.getRandomWeekDayMarker(task)
 }, {
   title: `ARCHIVE`,
-  get count() {
-    let counter = 0;
-    Array.from(document.querySelectorAll(`article`))
-      .map((el) => el.querySelector(`.card__btn--archive`).classList.contains(`card__btn--disabled`) ? counter : counter++);
-    return counter;
-  }
+  filter: (task) => task.isArchive,
+}, {
+  title: `TAGS`,
+  filter: () => RandomFn.getRandomBoolean(),
 }];

@@ -38,7 +38,7 @@ export const getTaskMarkup = ({description, tags, color, dueDate, repeatingDays,
 
           <div class="card__hashtag">
             <div class="card__hashtag-list">
-            ${Array.from(tags).slice(0, Math.floor(Math.random() * 4)).map((tag) => `<span class="card__hashtag-inner">
+            ${Array.from(tags).map((tag) => `<span class="card__hashtag-inner">
                 <span class="card__hashtag-name">
                   #${tag}
                 </span>
