@@ -1,5 +1,6 @@
 import {getMenuMarkup} from './components/menu';
 import {getSearchMarkup} from './components/search';
+import {getFilterWrapMarkup} from './components/filter-wrap';
 import {getFilterMarkup} from './components/filter';
 import {getBoardMarkup} from './components/board';
 import {getTaskEditMarkup} from './components/task-edit';
@@ -25,21 +26,29 @@ const taskRender = (container, data) => {
     .map(getTaskMarkup)
     .join(``)));
 };
+const filterRender = (container, data) => {
+  container.insertAdjacentHTML(`beforeend`, data
+    .map(getFilterMarkup)
+    .join(``));
+};
 
 const menuContainer = document.querySelector(`.control`);
 componentRendering(menuContainer, getMenuMarkup());
 
 const mainContainer = document.querySelector(`.main`);
 componentRendering(mainContainer, getSearchMarkup());
+componentRendering(mainContainer, getFilterWrapMarkup());
 componentRendering(mainContainer, getBoardMarkup());
 
 const boardContainer = document.querySelector(`.board`);
 componentRendering(boardContainer, getLoadMoreButtonMarkup());
 
+
 const boardTasks = document.querySelector(`.board__tasks`);
 taskRender(boardTasks, tasksData());
 
-componentRendering(boardContainer, getFilterMarkup(taskFilters), `beforebegin`);
+const mainFilterContainer = document.querySelector(`.main__filter`);
+filterRender(mainFilterContainer, taskFilters);
 
 const tasks = () => Array.from(document.querySelectorAll(`article`));
 const loadButtonElement = document.querySelector(`.load-more`);
