@@ -5,11 +5,10 @@ import {getBoardMarkup} from './components/board';
 import {getTaskEditMarkup} from './components/task-edit';
 import {getTaskMarkup} from './components/task';
 import {getLoadMoreButtonMarkup} from './components/load-more-button';
-import {getTaskData, taskFilters} from './components/data';
+import {taskFilters, tasksData} from './components/data';
 
 const TaskConst = {
   EDIT_AMOUNT: 1,
-  ALL: 23,
   ADD_BY_CLICK: 8,
 };
 
@@ -17,22 +16,14 @@ const componentRendering = (container, markup, position = `beforeend`) => {
   container.insertAdjacentHTML(position, markup);
 };
 
-const counterForFilter = (filters, tasks) => {
-  for (const el of filters) {
-    el.count = tasks.filter(el.filter).length;
-  }
-};
-
-const taskRender = (container, editCardAmount, tasksAmount) => {
-  const tasks = Array.from({length: tasksAmount}, getTaskData);
-  const editTask = Array.from({length: editCardAmount}, getTaskData);
-  container.insertAdjacentHTML(`beforeend`, editTask
+const taskRender = (container, data) => {
+  container.insertAdjacentHTML(`beforeend`, data
+    .slice(0, TaskConst.EDIT_AMOUNT)
     .map(getTaskEditMarkup)
     .join(``)
-    .concat(tasks
+    .concat(data
     .map(getTaskMarkup)
     .join(``)));
-  counterForFilter(taskFilters, tasks);
 };
 
 const menuContainer = document.querySelector(`.control`);
@@ -46,7 +37,8 @@ const boardContainer = document.querySelector(`.board`);
 componentRendering(boardContainer, getLoadMoreButtonMarkup());
 
 const boardTasks = document.querySelector(`.board__tasks`);
-taskRender(boardTasks, TaskConst.EDIT_AMOUNT, TaskConst.ALL);
+taskRender(boardTasks, tasksData());
+
 componentRendering(boardContainer, getFilterMarkup(taskFilters), `beforebegin`);
 
 const tasks = () => Array.from(document.querySelectorAll(`article`));

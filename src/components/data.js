@@ -1,4 +1,5 @@
 const MAX_TAGS = 3;
+const TASKS_AMOUNT = 23;
 
 const colors = [`black`,
   `yellow`,
@@ -26,6 +27,12 @@ const RandomFn = {
   getRandomWeekTime: () => 1 + Math.floor(Math.random() * 7) * 24 * 60 * 60 * 1000,
   getRandomBoolean: () => Boolean(Math.round(Math.random())),
   getRandomWeekDayMarker: (task) => Object.keys(task.repeatingDays).some((day) => task.repeatingDays[day])
+};
+
+const counterForFilter = (filters, tasks) => {
+  for (const el of filters) {
+    el.count = tasks.filter(el.filter).length;
+  }
 };
 
 export const getTaskData = () => ({
@@ -70,3 +77,7 @@ export const taskFilters = [{
   title: `TAGS`,
   filter: () => RandomFn.getRandomBoolean(),
 }];
+
+export const tasksData = () => Array.from({length: TASKS_AMOUNT}, getTaskData);
+
+counterForFilter(taskFilters, tasksData());
