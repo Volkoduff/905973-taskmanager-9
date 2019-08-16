@@ -9,4 +9,5 @@ export const getFilterMarkup = (filter) =>
     />
     <label for="filter__all" class="filter__label">
    ${filter.title}
-    <span class="filter__all-count">${filter.count}</span></label>`
+    <span class="filter__all-count">${filter.count}</span></label>`;
+
