@@ -3,29 +3,26 @@ import {getSearchMarkup} from './components/search';
 import {getFilterWrapMarkup} from './components/filter-wrap';
 import {getFilterMarkup} from './components/filter';
 import {getBoardMarkup} from './components/board';
-import {getTaskEditMarkup} from './components/task-edit';
-import {getTaskMarkup} from './components/task';
+import {TaskEdit} from './components/task-edit';
+import {Task} from './components/task';
 import {getLoadMoreButtonMarkup} from './components/load-more-button';
 import {taskFilters, tasksData} from './components/data';
+import {render} from './components/utils';
 
 const TaskConst = {
   EDIT_AMOUNT: 1,
   ADD_BY_CLICK: 8,
 };
 
+const Position = {
+  AFTERBEGIN: `afterbegin`,
+  BEFOREEND: `beforeend`
+};
+
 const componentRendering = (container, markup, position = `beforeend`) => {
   container.insertAdjacentHTML(position, markup);
 };
 
-const taskRender = (container, data) => {
-  container.insertAdjacentHTML(`beforeend`, data
-    .slice(0, TaskConst.EDIT_AMOUNT)
-    .map(getTaskEditMarkup)
-    .join(``)
-    .concat(data
-    .map(getTaskMarkup)
-    .join(``)));
-};
 const filterRender = (container, data) => {
   container.insertAdjacentHTML(`beforeend`, data
     .map(getFilterMarkup)
@@ -43,9 +40,48 @@ componentRendering(mainContainer, getBoardMarkup());
 const boardContainer = document.querySelector(`.board`);
 componentRendering(boardContainer, getLoadMoreButtonMarkup());
 
+const taskContainer = document.querySelector(`.board__tasks`);
 
-const boardTasks = document.querySelector(`.board__tasks`);
-taskRender(boardTasks, tasksData());
+const taskRender = (taskData) => {
+  const task = new Task(taskData);
+  const taskEdit = new TaskEdit(taskData);
+
+  const onEscKeyDown = (evt) => {
+    if (evt.key === `Escape`) {
+      taskContainer.replaceChild(task.getElement(), taskEdit.getElement());
+      document.addEventListener(`keydown`, onEscKeyDown);
+    }
+  };
+
+  task.getElement()
+  .querySelector(`.card__btn--edit`)
+  .addEventListener(`click`, () => {
+    taskContainer.replaceChild(taskEdit.getElement(), task.getElement());
+    document.addEventListener(`keydown`, onEscKeyDown);
+  });
+
+  taskEdit.getElement()
+  .querySelector(`textarea`)
+  .addEventListener(`focus`, () => {
+    removeEventListener(`keydown`, onEscKeyDown);
+  });
+
+  taskEdit.getElement().querySelector(`textarea`)
+    .addEventListener(`blur`, () => {
+      document.addEventListener(`keydown`, onEscKeyDown);
+    });
+
+  taskEdit.getElement()
+  .querySelector(`.card__save`)
+  .addEventListener(`click`, () => {
+    taskContainer.replaceChild(task.getElement(), taskEdit.getElement());
+    document.removeEventListener(`keydown`, onEscKeyDown);
+  });
+
+  render(taskContainer, task.getElement(), Position.BEFOREEND);
+};
+
+tasksData().forEach((task) => taskRender(task));
 
 const mainFilterContainer = document.querySelector(`.main__filter`);
 filterRender(mainFilterContainer, taskFilters);

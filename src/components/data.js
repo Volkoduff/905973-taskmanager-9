@@ -1,13 +1,13 @@
 const MAX_TAGS = 3;
 const TASKS_AMOUNT = 23;
 
-const colors = [`black`,
+const Colors = [`black`,
   `yellow`,
   `blue`,
   `green`,
   `pink`,
 ];
-const tagNames = [
+const TagNames = [
   `homework`,
   `theory`,
   `practice`,
@@ -16,7 +16,7 @@ const tagNames = [
   `task`,
   `learning`,
 ];
-const taskTitles = [
+const TaskTitles = [
   `Изучить теорию`,
   `Сделать домашку`,
   `Пройти интенсив на соточку`,
@@ -36,9 +36,9 @@ const counterForFilter = (filters, tasks) => {
 };
 
 export const getTaskData = () => ({
-  description: RandomFn.getRandomElementFromArray(taskTitles),
+  description: RandomFn.getRandomElementFromArray(TaskTitles),
   dueDate: Date.now() + RandomFn.getRandomWeekTime(),
-  tags: new Set(RandomFn.getSeveralRandomElementsFromArray(tagNames)),
+  tags: new Set(RandomFn.getSeveralRandomElementsFromArray(TagNames)),
   repeatingDays: {
     'mo': false,
     'tu': RandomFn.getRandomBoolean(),
@@ -48,7 +48,7 @@ export const getTaskData = () => ({
     'sa': false,
     'su': false,
   },
-  color: RandomFn.getRandomElementFromArray(colors),
+  color: RandomFn.getRandomElementFromArray(Colors),
   isFavorite: RandomFn.getRandomBoolean(),
   isArchive: RandomFn.getRandomBoolean(),
 });
@@ -81,3 +81,4 @@ export const taskFilters = [{
 export const tasksData = () => Array.from({length: TASKS_AMOUNT}, getTaskData);
 
 counterForFilter(taskFilters, tasksData());
+

@@ -1,14 +1,35 @@
-export const getTaskEditMarkup = ({description, color, repeatingDays, isFavorite, isArchive}) =>
-  `<article class="card card--edit card--${color} ${Object.keys(repeatingDays).some((day) => repeatingDays[day]) ? `card--repeat` : ``}">
+import {createElement} from './utils';
+
+export class TaskEdit {
+  constructor({description, tags, color, dueDate, repeatingDays, isFavorite, isArchive}) {
+    this._description = description;
+    this._tags = tags;
+    this._color = color;
+    this._dueDate = dueDate;
+    this._repeatingDays = repeatingDays;
+    this._isFavorite = isFavorite;
+    this._isArchive = isArchive;
+    this._element = null;
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  getTemplate() {
+    return `<article class="card card--edit card--${this._color} ${Object.keys(this._repeatingDays).some((day) => this._repeatingDays[day]) ? `card--repeat` : ``}">
   <form class="card__form" method="get">
     <div class="card__inner">
       <div class="card__control">
-        <button type="button" class="card__btn card__btn--archive ${isArchive ? `` : `card__btn--disabled`} ">
+        <button type="button" class="card__btn card__btn--archive ${this._isArchive ? `` : `card__btn--disabled`} ">
           archive
         </button>
         <button
           type="button"
-          class="card__btn card__btn--favorites ${isFavorite ? `` : `card__btn--disabled`} ">
+          class="card__btn card__btn--favorites ${this._isFavorite ? `` : `card__btn--disabled`} ">
           favorites
         </button>
       </div>
@@ -25,7 +46,7 @@ export const getTaskEditMarkup = ({description, color, repeatingDays, isFavorite
             class="card__text"
             placeholder="Start typing your text here..."
             name="text"
-          >${description}</textarea>
+          >${this._description}</textarea>
         </label>
       </div>
 
@@ -265,3 +286,5 @@ export const getTaskEditMarkup = ({description, color, repeatingDays, isFavorite
     </div>
   </form>
 </article>`;
+  }
+}
