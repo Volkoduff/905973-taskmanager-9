@@ -10,6 +10,7 @@ export class Task {
     this._isFavorite = isFavorite;
     this._isArchive = isArchive;
     this._element = null;
+    this._id = null;
   }
 
   getElement() {
@@ -17,6 +18,14 @@ export class Task {
       this._element = createElement(this.getTemplate());
     }
     return this._element;
+  }
+
+  getElementId(index) {
+    this._id = index;
+  }
+
+  removeElement() {
+    this._element = null;
   }
 
   getTemplate() {

@@ -7,7 +7,7 @@ import {TaskEdit} from './components/task-edit';
 import {Task} from './components/task';
 import {getLoadMoreButtonMarkup} from './components/load-more-button';
 import {taskFilters, tasksData} from './components/data';
-import {render} from './components/utils';
+import {render, unrender} from './components/utils';
 
 const TaskConst = {
   EDIT_AMOUNT: 1,
@@ -42,7 +42,7 @@ componentRendering(boardContainer, getLoadMoreButtonMarkup());
 
 const taskContainer = document.querySelector(`.board__tasks`);
 
-const taskRender = (taskData) => {
+const taskRender = (taskData, index) => {
   const task = new Task(taskData);
   const taskEdit = new TaskEdit(taskData);
 
@@ -53,12 +53,17 @@ const taskRender = (taskData) => {
     }
   };
 
+
   task.getElement()
   .querySelector(`.card__btn--edit`)
   .addEventListener(`click`, () => {
     taskContainer.replaceChild(taskEdit.getElement(), task.getElement());
     document.addEventListener(`keydown`, onEscKeyDown);
   });
+
+  console.log(index);
+
+  taskEdit.getElementId(index)
 
   taskEdit.getElement()
   .querySelector(`textarea`)
@@ -71,6 +76,12 @@ const taskRender = (taskData) => {
       document.addEventListener(`keydown`, onEscKeyDown);
     });
 
+  taskEdit.getElement().querySelector(`.card__delete`)
+    .addEventListener(`click`, () => {
+      unrender(taskEdit.getElement());
+      taskEdit.removeElement();
+    });
+
   taskEdit.getElement()
   .querySelector(`.card__save`)
   .addEventListener(`click`, () => {
@@ -81,7 +92,7 @@ const taskRender = (taskData) => {
   render(taskContainer, task.getElement(), Position.BEFOREEND);
 };
 
-tasksData().forEach((task) => taskRender(task));
+tasksData().forEach((task, it) => taskRender(task, it));
 
 const mainFilterContainer = document.querySelector(`.main__filter`);
 filterRender(mainFilterContainer, taskFilters);

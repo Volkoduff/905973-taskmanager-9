@@ -45,10 +45,11 @@ export const getTaskData = () => ({
     'we': false,
     'th': false,
     'fr': false,
-    'sa': false,
+    'sa': RandomFn.getRandomBoolean(),
     'su': false,
   },
   color: RandomFn.getRandomElementFromArray(Colors),
+  colors: Colors,
   isFavorite: RandomFn.getRandomBoolean(),
   isArchive: RandomFn.getRandomBoolean(),
 });
