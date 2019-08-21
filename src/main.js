@@ -53,7 +53,6 @@ const taskRender = (taskData, index) => {
     }
   };
 
-
   task.getElement()
   .querySelector(`.card__btn--edit`)
   .addEventListener(`click`, () => {
@@ -61,9 +60,7 @@ const taskRender = (taskData, index) => {
     document.addEventListener(`keydown`, onEscKeyDown);
   });
 
-  console.log(index);
-
-  taskEdit.getElementId(index)
+  taskEdit.getElementId(index);
 
   taskEdit.getElement()
   .querySelector(`textarea`)
