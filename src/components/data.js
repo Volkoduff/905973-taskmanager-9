@@ -1,12 +1,13 @@
 const MAX_TAGS = 3;
 const TASKS_AMOUNT = 23;
 
-const Colors = [`black`,
+export const Colors = [`black`,
   `yellow`,
   `blue`,
   `green`,
   `pink`,
 ];
+
 const TagNames = [
   `homework`,
   `theory`,
@@ -22,6 +23,7 @@ const TaskTitles = [
   `Пройти интенсив на соточку`,
 ];
 const RandomFn = {
+  getRandom: () => Math.random().toString().slice(3, 8),
   getRandomElementFromArray: (array) => array[Math.floor(Math.random() * array.length)],
   getSeveralRandomElementsFromArray: (array) => array.sort(() => 0.5 - Math.random()).slice(0, Math.floor(Math.random() * MAX_TAGS + 1)),
   getRandomWeekTime: () => 1 + Math.floor(Math.random() * 7) * 24 * 60 * 60 * 1000,
@@ -49,7 +51,6 @@ export const getTaskData = () => ({
     'su': false,
   },
   color: RandomFn.getRandomElementFromArray(Colors),
-  colors: Colors,
   isFavorite: RandomFn.getRandomBoolean(),
   isArchive: RandomFn.getRandomBoolean(),
 });
@@ -80,6 +81,4 @@ export const taskFilters = [{
 }];
 
 export const tasksData = () => Array.from({length: TASKS_AMOUNT}, getTaskData);
-
 counterForFilter(taskFilters, tasksData());
-

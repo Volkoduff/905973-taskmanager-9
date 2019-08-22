@@ -44,12 +44,12 @@ const taskContainer = document.querySelector(`.board__tasks`);
 
 const taskRender = (taskData, index) => {
   const task = new Task(taskData);
-  const taskEdit = new TaskEdit(taskData);
+  const taskEdit = new TaskEdit(taskData, index);
 
   const onEscKeyDown = (evt) => {
     if (evt.key === `Escape`) {
       taskContainer.replaceChild(task.getElement(), taskEdit.getElement());
-      document.addEventListener(`keydown`, onEscKeyDown);
+      document.removeEventListener(`keydown`, onEscKeyDown);
     }
   };
 
@@ -59,8 +59,6 @@ const taskRender = (taskData, index) => {
     taskContainer.replaceChild(taskEdit.getElement(), task.getElement());
     document.addEventListener(`keydown`, onEscKeyDown);
   });
-
-  taskEdit.getElementId(index);
 
   taskEdit.getElement()
   .querySelector(`textarea`)
@@ -100,6 +98,7 @@ const loadButtonElement = document.querySelector(`.load-more`);
 const hideButton = () => {
   loadButtonElement.style.display = `none`;
 };
+
 const displayButton = () => {
   loadButtonElement.style.display = `block`;
 };

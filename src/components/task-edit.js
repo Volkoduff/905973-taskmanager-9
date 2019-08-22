@@ -1,7 +1,9 @@
 import {createElement} from './utils';
 
+import {Colors} from './data';
+
 export class TaskEdit {
-  constructor({description, tags, color, colors, dueDate, repeatingDays, isFavorite, isArchive}) {
+  constructor({description, tags, color, colors, dueDate, repeatingDays, isFavorite, isArchive}, index) {
     this._description = description;
     this._tags = tags;
     this._color = color;
@@ -11,7 +13,7 @@ export class TaskEdit {
     this._isFavorite = isFavorite;
     this._isArchive = isArchive;
     this._element = null;
-    this._id = null;
+    this._id = index;
   }
 
   getElement() {
@@ -19,10 +21,6 @@ export class TaskEdit {
       this._element = createElement(this.getTemplate());
     }
     return this._element;
-  }
-
-  getElementId(index) {
-    this._id = index;
   }
 
   removeElement() {
@@ -82,7 +80,6 @@ export class TaskEdit {
             <button class="card__repeat-toggle" type="button">
               repeat:<span class="card__repeat-status">yes</span>
             </button>
-
             <fieldset class="card__repeat-days">
               <div class="card__repeat-days-inner">
               ${Object.keys(this._repeatingDays).map((day) =>`<input
@@ -162,18 +159,19 @@ export class TaskEdit {
         <div class="card__colors-inner">
           <h3 class="card__colors-title">Color</h3>
           <div class="card__colors-wrap">
-          ${this._colors.map((el) =>
+          ${Colors.map((el) =>
     ` <input
                type="radio"
                id="color-${el}-${this._id}"
                class="card__color-input card__color-input--${el} visually-hidden"
                name="color"
                value="${el}"
+               ${this._color === el ? `checked` : ``}
              />
              <label
                for="color-${el}-${this._id}"
                class="card__color card__color--${el}"
-               >black</label
+               >${el}</label
              >`
   ).join(``)}
 
