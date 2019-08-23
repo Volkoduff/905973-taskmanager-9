@@ -1,4 +1,6 @@
 import {getMenuMarkup} from './components/menu';
+import {getSortMarkup} from './components/sort';
+import {NoTask} from './components/no-tasks';
 import {getSearchMarkup} from './components/search';
 import {getFilterWrapMarkup} from './components/filter-wrap';
 import {getFilterMarkup} from './components/filter';
@@ -29,6 +31,11 @@ const filterRender = (container, data) => {
     .join(``));
 };
 
+const renderNoTasksText = () => {
+  const noTask = new NoTask();
+  boardContainer.append(noTask.getElement());
+};
+
 const menuContainer = document.querySelector(`.control`);
 componentRendering(menuContainer, getMenuMarkup());
 
@@ -38,8 +45,9 @@ componentRendering(mainContainer, getFilterWrapMarkup());
 componentRendering(mainContainer, getBoardMarkup());
 
 const boardContainer = document.querySelector(`.board`);
-componentRendering(boardContainer, getLoadMoreButtonMarkup());
+componentRendering(boardContainer, getSortMarkup(), Position.AFTERBEGIN);
 
+const sortContainer = document.querySelector(`.board__filter-list`);
 const taskContainer = document.querySelector(`.board__tasks`);
 
 const taskRender = (taskData, index) => {
@@ -63,7 +71,7 @@ const taskRender = (taskData, index) => {
   taskEdit.getElement()
   .querySelector(`textarea`)
   .addEventListener(`focus`, () => {
-    removeEventListener(`keydown`, onEscKeyDown);
+    document.removeEventListener(`keydown`, onEscKeyDown);
   });
 
   taskEdit.getElement().querySelector(`textarea`)
@@ -75,6 +83,11 @@ const taskRender = (taskData, index) => {
     .addEventListener(`click`, () => {
       unrender(taskEdit.getElement());
       taskEdit.removeElement();
+      if (tasks()) {
+        renderNoTasksText();
+        taskContainer.remove();
+        sortContainer.remove();
+      }
     });
 
   taskEdit.getElement()
@@ -93,15 +106,6 @@ const mainFilterContainer = document.querySelector(`.main__filter`);
 filterRender(mainFilterContainer, taskFilters);
 
 const tasks = () => Array.from(document.querySelectorAll(`article`));
-const loadButtonElement = document.querySelector(`.load-more`);
-
-const hideButton = () => {
-  loadButtonElement.style.display = `none`;
-};
-
-const displayButton = () => {
-  loadButtonElement.style.display = `block`;
-};
 
 const hideExtraTasks = (amount) => {
   Array.from(tasks())
@@ -109,6 +113,25 @@ const hideExtraTasks = (amount) => {
     .forEach((el) => {
       el.style.display = `none`;
     });
+};
+
+if (tasks().length > TaskConst.ADD_BY_CLICK) {
+  hideExtraTasks(TaskConst.ADD_BY_CLICK);
+  componentRendering(boardContainer, getLoadMoreButtonMarkup());
+}
+
+const loadButtonElement = document.querySelector(`.load-more`);
+loadButtonElement.addEventListener(`click`, () => {
+  addExtraTasks();
+  toogleButton();
+});
+
+const hideButton = () => {
+  loadButtonElement.style.display = `none`;
+};
+
+const displayButton = () => {
+  loadButtonElement.style.display = `block`;
 };
 
 const tasksToLoad = () => tasks()
@@ -126,11 +149,3 @@ const addExtraTasks = () => {
     });
 };
 
-if (tasks().length > TaskConst.ADD_BY_CLICK) {
-  hideExtraTasks(TaskConst.ADD_BY_CLICK);
-}
-
-loadButtonElement.addEventListener(`click`, () => {
-  addExtraTasks();
-  toogleButton();
-});
