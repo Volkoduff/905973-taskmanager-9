@@ -74,7 +74,8 @@ const taskRender = (taskData, index) => {
     document.removeEventListener(`keydown`, onEscKeyDown);
   });
 
-  taskEdit.getElement().querySelector(`textarea`)
+  taskEdit.getElement()
+  .querySelector(`textarea`)
     .addEventListener(`blur`, () => {
       document.addEventListener(`keydown`, onEscKeyDown);
     });
@@ -91,8 +92,9 @@ const taskRender = (taskData, index) => {
     });
 
   taskEdit.getElement()
-  .querySelector(`.card__save`)
-  .addEventListener(`click`, () => {
+  .querySelector(`.card__form`)
+  .addEventListener(`submit`, (evt) => {
+    evt.preventDefault();
     taskContainer.replaceChild(task.getElement(), taskEdit.getElement());
     document.removeEventListener(`keydown`, onEscKeyDown);
   });
