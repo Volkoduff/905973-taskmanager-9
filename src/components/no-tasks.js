@@ -1,13 +1,6 @@
-import {createElement} from './utils';
+import {AbstractComponent} from './abstract-component';
 
-export class NoTask {
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
+export class NoTask extends AbstractComponent {
   getTemplate() {
     return `<p class="board__no-tasks">
           Congratulations, all tasks were completed! To create a new click on

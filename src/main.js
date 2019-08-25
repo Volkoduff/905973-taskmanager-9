@@ -1,25 +1,9 @@
 import {getMenuMarkup} from './components/menu';
-import {getSortMarkup} from './components/sort';
-import {NoTask} from './components/no-tasks';
 import {getSearchMarkup} from './components/search';
 import {getFilterWrapMarkup} from './components/filter-wrap';
 import {getFilterMarkup} from './components/filter';
-import {getBoardMarkup} from './components/board';
-import {TaskEdit} from './components/task-edit';
-import {Task} from './components/task';
-import {getLoadMoreButtonMarkup} from './components/load-more-button';
+import {BoardController} from './components/controllers/board';
 import {taskFilters, tasksData} from './components/data';
-import {render, unrender} from './components/utils';
-
-const TaskConst = {
-  EDIT_AMOUNT: 1,
-  ADD_BY_CLICK: 8,
-};
-
-const Position = {
-  AFTERBEGIN: `afterbegin`,
-  BEFOREEND: `beforeend`
-};
 
 const componentRendering = (container, markup, position = `beforeend`) => {
   container.insertAdjacentHTML(position, markup);
@@ -31,123 +15,15 @@ const filterRender = (container, data) => {
     .join(``));
 };
 
-const renderNoTasksText = () => {
-  const noTask = new NoTask();
-  boardContainer.append(noTask.getElement());
-};
-
 const menuContainer = document.querySelector(`.control`);
 componentRendering(menuContainer, getMenuMarkup());
 
 const mainContainer = document.querySelector(`.main`);
 componentRendering(mainContainer, getSearchMarkup());
 componentRendering(mainContainer, getFilterWrapMarkup());
-componentRendering(mainContainer, getBoardMarkup());
-
-const boardContainer = document.querySelector(`.board`);
-componentRendering(boardContainer, getSortMarkup(), Position.AFTERBEGIN);
-
-const sortContainer = document.querySelector(`.board__filter-list`);
-const taskContainer = document.querySelector(`.board__tasks`);
-
-const taskRender = (taskData, index) => {
-  const task = new Task(taskData);
-  const taskEdit = new TaskEdit(taskData, index);
-
-  const onEscKeyDown = (evt) => {
-    if (evt.key === `Escape`) {
-      taskContainer.replaceChild(task.getElement(), taskEdit.getElement());
-      document.removeEventListener(`keydown`, onEscKeyDown);
-    }
-  };
-
-  task.getElement()
-  .querySelector(`.card__btn--edit`)
-  .addEventListener(`click`, () => {
-    taskContainer.replaceChild(taskEdit.getElement(), task.getElement());
-    document.addEventListener(`keydown`, onEscKeyDown);
-  });
-
-  taskEdit.getElement()
-  .querySelector(`textarea`)
-  .addEventListener(`focus`, () => {
-    document.removeEventListener(`keydown`, onEscKeyDown);
-  });
-
-  taskEdit.getElement()
-  .querySelector(`textarea`)
-    .addEventListener(`blur`, () => {
-      document.addEventListener(`keydown`, onEscKeyDown);
-    });
-
-  taskEdit.getElement().querySelector(`.card__delete`)
-    .addEventListener(`click`, () => {
-      unrender(taskEdit.getElement());
-      taskEdit.removeElement();
-      if (tasks()) {
-        renderNoTasksText();
-        taskContainer.remove();
-        sortContainer.remove();
-      }
-    });
-
-  taskEdit.getElement()
-  .querySelector(`.card__form`)
-  .addEventListener(`submit`, (evt) => {
-    evt.preventDefault();
-    taskContainer.replaceChild(task.getElement(), taskEdit.getElement());
-    document.removeEventListener(`keydown`, onEscKeyDown);
-  });
-
-  render(taskContainer, task.getElement(), Position.BEFOREEND);
-};
-
-tasksData().forEach((task, it) => taskRender(task, it));
 
 const mainFilterContainer = document.querySelector(`.main__filter`);
 filterRender(mainFilterContainer, taskFilters);
 
-const tasks = () => Array.from(document.querySelectorAll(`article`));
-
-const hideExtraTasks = (amount) => {
-  Array.from(tasks())
-    .slice(amount)
-    .forEach((el) => {
-      el.style.display = `none`;
-    });
-};
-
-if (tasks().length > TaskConst.ADD_BY_CLICK) {
-  hideExtraTasks(TaskConst.ADD_BY_CLICK);
-  componentRendering(boardContainer, getLoadMoreButtonMarkup());
-}
-
-const loadButtonElement = document.querySelector(`.load-more`);
-loadButtonElement.addEventListener(`click`, () => {
-  addExtraTasks();
-  toogleButton();
-});
-
-const hideButton = () => {
-  loadButtonElement.style.display = `none`;
-};
-
-const displayButton = () => {
-  loadButtonElement.style.display = `block`;
-};
-
-const tasksToLoad = () => tasks()
-  .filter((el, index) =>
-    el.style.display === `none` && index >= TaskConst.ADD_BY_CLICK);
-
-const toogleButton = () =>
-  tasksToLoad().length > 0 ? displayButton() : hideButton();
-
-const addExtraTasks = () => {
-  tasksToLoad(TaskConst.ADD_BY_CLICK)
-    .slice(0, TaskConst.ADD_BY_CLICK)
-    .map((it) => {
-      it.style.display = `block`;
-    });
-};
-
+const boardController = new BoardController(mainContainer, tasksData);
+boardController.init();
