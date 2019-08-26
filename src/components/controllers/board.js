@@ -2,10 +2,10 @@ import {TaskList} from './../task-list';
 import {TaskEdit} from './../task-edit';
 import {Board} from './../board';
 import {Sort} from './../sort';
-import {render, unrender} from './../utils';
 import {LoadButton} from './../load-more-button';
 import {Task} from './../task';
 import {NoTask} from './../no-tasks';
+import {render, unrender} from './../utils';
 
 const TaskConst = {
   EDIT_AMOUNT: 1,
@@ -33,19 +33,67 @@ export class BoardController {
       render(this._board.getElement(), this._taskList.getElement());
 
       this._tasks()
-        .filter((mockTask, it) => it < TaskConst.DISPLAY_FIRST_TASKS)
-        .forEach((mockTask, it) => this._renderTask(mockTask, it));
+      .filter((mockTask, it) => it < TaskConst.DISPLAY_FIRST_TASKS)
+      .forEach((mockTask, it) => this._renderTask(mockTask, it));
     } else {
       this._renderNoTaskText();
     }
 
     if (this._tasks().length > TaskConst.ADD_BY_CLICK) {
       this._renderLoadButton();
+
       this._savedTasksToRender = Array.from(this._tasks()
         .filter((mockTask, it) => it >= TaskConst.DISPLAY_FIRST_TASKS));
     }
+
+    this._sort.getElement()
+      .addEventListener(`click`, (evt) => this._onSortLinkClick(evt));
   }
 
+  _onSortLinkClick(evt) {
+    evt.preventDefault();
+
+    if (evt.target.tagName !== `A`) {
+      return;
+    }
+    this._taskList.getElement().innerHTML = ``;
+
+    switch (evt.target.dataset.sortType) {
+      case `date-up`:
+        if (this._savedTasksToRender.length) {
+          this._tasks().slice()
+            .filter((mockTask, it) => it < TaskConst.DISPLAY_FIRST_TASKS)
+            .sort((a, b) => a.dueDate - b.dueDate)
+            .forEach((mockTask, it) => this._renderTask(mockTask, it));
+        } else {
+          this._tasks().slice()
+            .sort((a, b) => a.dueDate - b.dueDate)
+            .forEach((mockTask, it) => this._renderTask(mockTask, it));
+        }
+        break;
+      case `date-down`:
+        if (this._savedTasksToRender.length) {
+          this._tasks().slice()
+            .filter((mockTask, it) => it < TaskConst.DISPLAY_FIRST_TASKS)
+            .sort((a, b) => b.dueDate - a.dueDate)
+            .forEach((mockTask, it) => this._renderTask(mockTask, it));
+        } else {
+          this._tasks().slice()
+            .sort((a, b) => b.dueDate - a.dueDate)
+            .forEach((mockTask, it) => this._renderTask(mockTask, it));
+        }
+        break;
+      case `default`:
+        if (this._savedTasksToRender.length) {
+          this._tasks().slice()
+            .filter((mockTask, it) => it < TaskConst.DISPLAY_FIRST_TASKS)
+            .forEach((mockTask, it) => this._renderTask(mockTask, it));
+        } else {
+          this._tasks().slice().forEach((mockTask, it) => this._renderTask(mockTask, it));
+        }
+        break;
+    }
+  }
 
   _clearBoard() {
     unrender(this._taskList.getElement());
@@ -58,7 +106,6 @@ export class BoardController {
 
   _renderLoadButton() {
     const loadButton = new LoadButton();
-
     loadButton.getElement()
       .addEventListener(`click`, () => {
         this._savedTasksToRender
@@ -68,7 +115,6 @@ export class BoardController {
           unrender(loadButton.getElement());
         }
       });
-
     render(this._board.getElement(), loadButton.getElement());
   }
 

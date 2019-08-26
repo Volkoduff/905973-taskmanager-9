@@ -13,10 +13,6 @@ export class Task extends AbstractComponent {
     this._id = null;
   }
 
-  getElementId(index) {
-    this._id = index;
-  }
-
   getTemplate() {
     return `<article class="card card--${this._color} ${Object.keys(this._repeatingDays).some((day) => this._repeatingDays[day]) ? `card--repeat` : ``}">
   <div class="card__form">
