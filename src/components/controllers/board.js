@@ -22,7 +22,8 @@ export class BoardController {
     this._sort = new Sort();
     this._loadButton = new LoadButton();
     this._noTaskText = new NoTask();
-    this._savedTasksToRender = null;
+    this._indexOfNextTaskRender = 0;
+    this._isButtonRendered = false;
   }
 
   init() {
@@ -31,7 +32,6 @@ export class BoardController {
     if (this._tasks.length) {
       render(this._board.getElement(), this._sort.getElement());
       render(this._board.getElement(), this._taskList.getElement());
-
       this._tasks
         .filter((mockTask, it) => it < TaskConst.DISPLAY_FIRST_TASKS)
         .forEach((mockTask, it) => this._renderTask(mockTask, it));
@@ -40,19 +40,26 @@ export class BoardController {
     }
 
     if (this._tasks.length > TaskConst.ADD_BY_CLICK) {
+      this._indexOfNextTaskRender += TaskConst.DISPLAY_FIRST_TASKS;
       this._renderLoadButton();
-
-      this._savedTasksToRender = Array.from(this._tasks
-        .filter((mockTask, it) => it >= TaskConst.DISPLAY_FIRST_TASKS));
     }
 
     this._sort.getElement()
       .addEventListener(`click`, (evt) => this._onSortLinkClick(evt));
   }
 
+  _renderButtonIfNotRendered() {
+    if (!this._isButtonRendered) {
+      this._renderLoadButton();
+    }
+  }
+
+  _ifTooMuchTasks() {
+    return this._indexOfNextTaskRender >= TaskConst.DISPLAY_FIRST_TASKS;
+  }
+
   _onSortLinkClick(evt) {
     evt.preventDefault();
-
     if (evt.target.tagName !== `A`) {
       return;
     }
@@ -60,36 +67,57 @@ export class BoardController {
 
     switch (evt.target.dataset.sortType) {
       case `date-up`:
-        if (this._savedTasksToRender.length) {
-          this._tasks.slice()
-            .filter((mockTask, it) => it < TaskConst.DISPLAY_FIRST_TASKS)
+        if (this._ifTooMuchTasks) {
+          this._tasks
             .sort((a, b) => a.dueDate - b.dueDate)
+            .filter((mockTask, it) => TaskConst.DISPLAY_FIRST_TASKS > it)
             .forEach((mockTask, it) => this._renderTask(mockTask, it));
+          this._indexOfNextTaskRender = TaskConst.DISPLAY_FIRST_TASKS;
+          this._renderButtonIfNotRendered();
         } else {
-          this._tasks.slice()
+          this._tasks
             .sort((a, b) => a.dueDate - b.dueDate)
             .forEach((mockTask, it) => this._renderTask(mockTask, it));
         }
         break;
       case `date-down`:
-        if (this._savedTasksToRender.length) {
-          this._tasks.slice()
-            .filter((mockTask, it) => it < TaskConst.DISPLAY_FIRST_TASKS)
+        if (this._ifTooMuchTasks) {
+          this._tasks
             .sort((a, b) => b.dueDate - a.dueDate)
+            .filter((mockTask, it) => TaskConst.DISPLAY_FIRST_TASKS > it)
             .forEach((mockTask, it) => this._renderTask(mockTask, it));
+          this._indexOfNextTaskRender = TaskConst.DISPLAY_FIRST_TASKS;
+          this._renderButtonIfNotRendered();
         } else {
-          this._tasks.slice()
+          this._tasks
             .sort((a, b) => b.dueDate - a.dueDate)
             .forEach((mockTask, it) => this._renderTask(mockTask, it));
         }
         break;
       case `default`:
-        if (this._savedTasksToRender.length) {
-          this._tasks.slice()
-            .filter((mockTask, it) => it < TaskConst.DISPLAY_FIRST_TASKS)
+        if (this._ifTooMuchTasks) {
+          this._tasks.sort((a, b) => {
+            if (a.description < b.description) {
+              return -1;
+            } else if (a.description > b.description) {
+              return 1;
+            } else {
+              return 0;
+            }
+          }).filter((mockTask, it) => TaskConst.DISPLAY_FIRST_TASKS > it)
             .forEach((mockTask, it) => this._renderTask(mockTask, it));
+          this._indexOfNextTaskRender = TaskConst.DISPLAY_FIRST_TASKS;
+          this._renderButtonIfNotRendered();
         } else {
-          this._tasks.slice().forEach((mockTask, it) => this._renderTask(mockTask, it));
+          this._tasks.sort((a, b) => {
+            if (a.description < b.description) {
+              return -1;
+            } else if (a.description > b.description) {
+              return 1;
+            } else {
+              return 0;
+            }
+          }).forEach((mockTask, it) => this._renderTask(mockTask, it));
         }
         break;
     }
@@ -106,16 +134,20 @@ export class BoardController {
 
   _renderLoadButton() {
     const loadButton = new LoadButton();
+
     loadButton.getElement()
       .addEventListener(`click`, () => {
-        this._savedTasksToRender
-          .splice(0, TaskConst.ADD_BY_CLICK)
+        this._tasks
+          .filter((task, it) => it >= this._indexOfNextTaskRender && it < this._indexOfNextTaskRender + TaskConst.ADD_BY_CLICK)
           .forEach((mockTask, it) => this._renderTask(mockTask, it));
-        if (!this._savedTasksToRender.length) {
+        this._indexOfNextTaskRender += TaskConst.ADD_BY_CLICK;
+        if (this._indexOfNextTaskRender > this._tasks.length) {
           unrender(loadButton.getElement());
+          this._isButtonRendered = false;
         }
       });
     render(this._board.getElement(), loadButton.getElement());
+    this._isButtonRendered = true;
   }
 
   _renderTask(task, index) {
