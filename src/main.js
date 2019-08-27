@@ -25,5 +25,5 @@ componentRendering(mainContainer, getFilterWrapMarkup());
 const mainFilterContainer = document.querySelector(`.main__filter`);
 filterRender(mainFilterContainer, taskFilters);
 
-const boardController = new BoardController(mainContainer, tasksData);
+const boardController = new BoardController(mainContainer, tasksData());
 boardController.init();

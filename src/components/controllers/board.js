@@ -28,21 +28,21 @@ export class BoardController {
   init() {
     render(this._container, this._board.getElement());
 
-    if (this._tasks().length) {
+    if (this._tasks.length) {
       render(this._board.getElement(), this._sort.getElement());
       render(this._board.getElement(), this._taskList.getElement());
 
-      this._tasks()
-      .filter((mockTask, it) => it < TaskConst.DISPLAY_FIRST_TASKS)
-      .forEach((mockTask, it) => this._renderTask(mockTask, it));
+      this._tasks
+        .filter((mockTask, it) => it < TaskConst.DISPLAY_FIRST_TASKS)
+        .forEach((mockTask, it) => this._renderTask(mockTask, it));
     } else {
       this._renderNoTaskText();
     }
 
-    if (this._tasks().length > TaskConst.ADD_BY_CLICK) {
+    if (this._tasks.length > TaskConst.ADD_BY_CLICK) {
       this._renderLoadButton();
 
-      this._savedTasksToRender = Array.from(this._tasks()
+      this._savedTasksToRender = Array.from(this._tasks
         .filter((mockTask, it) => it >= TaskConst.DISPLAY_FIRST_TASKS));
     }
 
@@ -61,35 +61,35 @@ export class BoardController {
     switch (evt.target.dataset.sortType) {
       case `date-up`:
         if (this._savedTasksToRender.length) {
-          this._tasks().slice()
+          this._tasks.slice()
             .filter((mockTask, it) => it < TaskConst.DISPLAY_FIRST_TASKS)
             .sort((a, b) => a.dueDate - b.dueDate)
             .forEach((mockTask, it) => this._renderTask(mockTask, it));
         } else {
-          this._tasks().slice()
+          this._tasks.slice()
             .sort((a, b) => a.dueDate - b.dueDate)
             .forEach((mockTask, it) => this._renderTask(mockTask, it));
         }
         break;
       case `date-down`:
         if (this._savedTasksToRender.length) {
-          this._tasks().slice()
+          this._tasks.slice()
             .filter((mockTask, it) => it < TaskConst.DISPLAY_FIRST_TASKS)
             .sort((a, b) => b.dueDate - a.dueDate)
             .forEach((mockTask, it) => this._renderTask(mockTask, it));
         } else {
-          this._tasks().slice()
+          this._tasks.slice()
             .sort((a, b) => b.dueDate - a.dueDate)
             .forEach((mockTask, it) => this._renderTask(mockTask, it));
         }
         break;
       case `default`:
         if (this._savedTasksToRender.length) {
-          this._tasks().slice()
+          this._tasks.slice()
             .filter((mockTask, it) => it < TaskConst.DISPLAY_FIRST_TASKS)
             .forEach((mockTask, it) => this._renderTask(mockTask, it));
         } else {
-          this._tasks().slice().forEach((mockTask, it) => this._renderTask(mockTask, it));
+          this._tasks.slice().forEach((mockTask, it) => this._renderTask(mockTask, it));
         }
         break;
     }
@@ -109,8 +109,8 @@ export class BoardController {
     loadButton.getElement()
       .addEventListener(`click`, () => {
         this._savedTasksToRender
-        .splice(0, TaskConst.ADD_BY_CLICK)
-        .forEach((mockTask, it) => this._renderTask(mockTask, it));
+          .splice(0, TaskConst.ADD_BY_CLICK)
+          .forEach((mockTask, it) => this._renderTask(mockTask, it));
         if (!this._savedTasksToRender.length) {
           unrender(loadButton.getElement());
         }
