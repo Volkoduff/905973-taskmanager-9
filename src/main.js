@@ -2,7 +2,7 @@ import {getMenuMarkup} from './components/menu';
 import {getSearchMarkup} from './components/search';
 import {getFilterWrapMarkup} from './components/filter-wrap';
 import {getFilterMarkup} from './components/filter';
-import {BoardController} from './components/controllers/board';
+import {BoardController} from './components/controllers/board-controller';
 import {taskFilters, tasksData} from './components/data';
 
 const componentRendering = (container, markup, position = `beforeend`) => {

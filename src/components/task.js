@@ -43,13 +43,16 @@ export class Task extends AbstractComponent {
 
       <div class="card__settings">
         <div class="card__details">
-          <div class="card__dates">
+        ${this._dueDate === null ? `` :
+    `<div class="card__dates">
             <div class="card__date-deadline">
               <p class="card__input-deadline-wrap">
-                <span class="card__date">${new Date(this._dueDate).toDateString()}</span>
+                <span class="card__date">
+    ${new Date(this._dueDate).toDateString()}
+        </span>
               </p>
             </div>
-          </div>
+          </div>`}
 
           <div class="card__hashtag">
             <div class="card__hashtag-list">

@@ -3,17 +3,30 @@ import {AbstractComponent} from './abstract-component';
 import {Colors} from './data';
 
 export class TaskEdit extends AbstractComponent {
-  constructor({description, tags, color, colors, dueDate, repeatingDays, isFavorite, isArchive}, index) {
+  constructor({description, tags, color, dueDate, repeatingDays, isFavorite, isArchive}, index) {
     super();
     this._tags = tags;
     this._color = color;
     this._description = description;
-    this._colors = colors;
     this._dueDate = dueDate;
     this._repeatingDays = repeatingDays;
     this._isFavorite = isFavorite;
     this._isArchive = isArchive;
     this._id = index;
+  }
+
+
+  _repeatingDaysCheck() {
+    let result = false;
+    if (typeof this._repeatingDays === `object`) {
+      for (const key in this._repeatingDays) {
+        if (this._repeatingDays[key] === true) {
+          result = true;
+          break;
+        }
+      }
+    }
+    return result;
   }
 
   getTemplate() {
@@ -50,10 +63,13 @@ export class TaskEdit extends AbstractComponent {
       <div class="card__settings">
         <div class="card__details">
           <div class="card__dates">
-            <button class="card__date-deadline-toggle" type="button">
+${this._dueDate === null ?
+    `<button class="card__date-deadline-toggle" type="button">
+              date: <span class="card__date-status">no</span>
+            </button>` :
+    `<button class="card__date-deadline-toggle" type="button">
               date: <span class="card__date-status">yes</span>
             </button>
-
             <fieldset class="card__date-deadline">
               <label class="card__input-deadline-wrap">
                 <input
@@ -61,17 +77,18 @@ export class TaskEdit extends AbstractComponent {
                   type="text"
                   placeholder=""
                   name="date"
-                  value="23 September 11:15 PM"
+                  value="${new Date(this._dueDate)}"
                 />
               </label>
-            </fieldset>
+            </fieldset>`}
 
             <button class="card__repeat-toggle" type="button">
-              repeat:<span class="card__repeat-status">yes</span>
+              repeat:<span class="card__repeat-status">${this._repeatingDaysCheck() ? `yes` : `no`}</span>
             </button>
+            
             <fieldset class="card__repeat-days">
               <div class="card__repeat-days-inner">
-              ${Object.keys(this._repeatingDays).map((day) =>`<input
+              ${this._repeatingDaysCheck() ? Object.keys(this._repeatingDays).map((day) =>`<input
               class="visually-hidden card__repeat-day-input"
               type="checkbox"
               id="repeat-${day}-${this._id}"
@@ -81,57 +98,28 @@ export class TaskEdit extends AbstractComponent {
               >
             <label class="card__repeat-day" for="repeat-${day}-${this._id}"
               >${day}</label
-            >`).join(``)}
+            >`).join(``) : `` }
               </div>
             </fieldset>
           </div>
 
           <div class="card__hashtag">
             <div class="card__hashtag-list">
-              <span class="card__hashtag-inner">
+            ${Array.from(this._tags).map((tag) =>`<span class="card__hashtag-inner">
                 <input
                   type="hidden"
                   name="hashtag"
-                  value="repeat"
+                  value="${tag}"
                   class="card__hashtag-hidden-input"
                 />
                 <p class="card__hashtag-name">
-                  #repeat
+                  #${tag}
                 </p>
                 <button type="button" class="card__hashtag-delete">
                   delete
                 </button>
-              </span>
+              </span>`).join(``)}
 
-              <span class="card__hashtag-inner">
-                <input
-                  type="hidden"
-                  name="hashtag"
-                  value="repeat"
-                  class="card__hashtag-hidden-input"
-                />
-                <p class="card__hashtag-name">
-                  #cinema
-                </p>
-                <button type="button" class="card__hashtag-delete">
-                  delete
-                </button>
-              </span>
-
-              <span class="card__hashtag-inner">
-                <input
-                  type="hidden"
-                  name="hashtag"
-                  value="repeat"
-                  class="card__hashtag-hidden-input"
-                />
-                <p class="card__hashtag-name">
-                  #entertaiment
-                </p>
-                <button type="button" class="card__hashtag-delete">
-                  delete
-                </button>
-              </span>
             </div>
 
             <label>
