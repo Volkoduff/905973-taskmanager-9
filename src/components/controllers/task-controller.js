@@ -1,7 +1,7 @@
 import {Task} from './../task';
 import {TaskEdit} from './../task-edit';
 import {HashTag} from './../hashtag';
-import {Deadline} from './../deadline';
+// import {Deadline} from './../deadline';
 import {RepeatDays} from './../repeat-days';
 
 import {render, unrender} from "../utils";
@@ -9,14 +9,16 @@ import {render, unrender} from "../utils";
 const HASHTAG_MAX_LENGTH = 20;
 
 export class TaskController {
+
   constructor(container, tasks, index, onDataChange, onChangeView, onTaskDelete) {
     this._container = container;
     this._tasks = tasks;
+    this._index = index;
     this._onDataChange = onDataChange;
     this._onChangeView = onChangeView;
     this._onTaskDelete = onTaskDelete;
     this._taskView = new Task(tasks);
-    this._taskEdit = new TaskEdit(tasks, index);
+    this._taskEdit = new TaskEdit(this._tasks, this._index);
     this.create();
   }
 
@@ -28,28 +30,30 @@ export class TaskController {
       }
     };
 
-    this._taskEdit.getElement()
-      .querySelector(`.card__date-deadline-toggle`)
-      .addEventListener(`click`, () => {
-        this._dateStatus = this._taskEdit.getElement().querySelector(`.card__date-status`);
-        switch (this._dateStatus.textContent.toLowerCase().trim()) {
-          case `yes`:
-            this._dateStatus.textContent = `no`;
-            const deadline = this._taskEdit.getElement()
-              .querySelector(`.card__date-deadline`);
-            deadline.querySelector(`.card__date`).value = ``;
-            unrender(deadline);
-            this._tasks.dueDate = ``;
-            break;
-          case `no`:
-            this._dateStatus.textContent = `yes`;
-            this._deadline = new Deadline(this._tasks);
-            const elementBeforeDeadline = this._taskEdit.getElement()
-              .querySelector(`.card__date-deadline-toggle`);
-            render(elementBeforeDeadline, this._deadline.getTemplate(), `afterend`);
-            break;
-        }
-      });
+    this._taskEdit.toggleDate.bind(TaskEdit);
+
+    // this._taskEdit.getElement()
+    //   .querySelector(`.card__date-deadline-toggle`)
+    //   .addEventListener(`click`, () => {
+    //     this._dateStatus = this._taskEdit.getElement().querySelector(`.card__date-status`);
+    //     switch (this._dateStatus.textContent.toLowerCase().trim()) {
+    //       case `yes`:
+    //         this._dateStatus.textContent = `no`;
+    //         const deadline = this._taskEdit.getElement()
+    //           .querySelector(`.card__date-deadline`);
+    //         deadline.querySelector(`.card__date`).value = ``;
+    //         unrender(deadline);
+    //         this._tasks.dueDate = ``;
+    //         break;
+    //       case `no`:
+    //         this._dateStatus.textContent = `yes`;
+    //         this._deadline = new Deadline(this._tasks);
+    //         const elementBeforeDeadline = this._taskEdit.getElement()
+    //           .querySelector(`.card__date-deadline-toggle`);
+    //         render(elementBeforeDeadline, this._deadline.getTemplate(), `afterend`);
+    //         break;
+    //     }
+    //   });
 
     this._taskEdit.getElement()
       .querySelector(`.card__repeat-toggle`)

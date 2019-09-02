@@ -85,7 +85,6 @@ export class BoardController {
   }
 
   _onDataChange(newData, oldData) {
-
     this._tasks[this._tasks.findIndex((it) => it === oldData)] = newData;
     this._renderBoard(this._tasks);
   }
