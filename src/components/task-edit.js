@@ -1,8 +1,12 @@
 import {AbstractComponent} from './abstract-component';
 
 import {Colors} from './data';
-import {render, unrender} from "./utils";
 import {Deadline} from "./deadline";
+import {RepeatDays} from "./repeat-days";
+import {HashTag} from "./hashtag";
+import {render, unrender} from "./utils";
+
+const HASHTAG_MAX_LENGTH = 20;
 
 export class TaskEdit extends AbstractComponent {
   constructor({description, tags, color, dueDate, repeatingDays, isFavorite, isArchive}, index) {
@@ -15,7 +19,6 @@ export class TaskEdit extends AbstractComponent {
     this._isFavorite = isFavorite;
     this._isArchive = isArchive;
     this._id = index;
-    this.toggleDate = this.toggleDate.bind(this);
   }
 
   _repeatingDaysCheck() {
@@ -31,44 +34,71 @@ export class TaskEdit extends AbstractComponent {
     return result;
   }
 
-  toggleDate() {
-    this._taskEdit.getElement()
-      .querySelector(`.card__date-deadline-toggle`)
-      .addEventListener(`click`, () => {
-        this._dateStatus = this._taskEdit.getElement().querySelector(`.card__date-status`);
-        switch (this._dateStatus.textContent.toLowerCase().trim()) {
-          case `yes`:
-            this._dateStatus.textContent = `no`;
-            const deadline = this._taskEdit.getElement()
-              .querySelector(`.card__date-deadline`);
-            deadline.querySelector(`.card__date`).value = ``;
-            unrender(deadline);
-            this._tasks.dueDate = ``;
-            break;
-          case `no`:
-            this._dateStatus.textContent = `yes`;
-            this._deadline = new Deadline(this._tasks);
-            const elementBeforeDeadline = this._taskEdit.getElement()
-              .querySelector(`.card__date-deadline-toggle`);
-            render(elementBeforeDeadline, this._deadline.getTemplate(), `afterend`);
-            break;
-        }
-      });
+  _onClickToggleRepeatDays() {
+    this._repeatStatus = this.getElement().querySelector(`.card__repeat-status`);
+    switch (this._repeatStatus.textContent.toLowerCase().trim()) {
+      case `yes`:
+        this._repeatStatus.textContent = `no`;
+        const repeatDays = this.getElement()
+          .querySelector(`.card__repeat-days`);
+        unrender(repeatDays);
+        this.dueDate = ``;
+        break;
+      case `no`:
+        this._repeatStatus.textContent = `yes`;
+        this._repeatDays = new RepeatDays(this._repeatingDays, this._id);
+        const datesWrap = this.getElement()
+          .querySelector(`.card__dates`);
+        render(datesWrap, this._repeatDays.getElement());
+        break;
+    }
   }
 
-  // _getMiniTemplate() {
-  //   return `<fieldset class="card__date-deadline">
-  //             <label class="card__input-deadline-wrap">
-  //               <input
-  //                 class="card__date"
-  //                 type="text"
-  //                 placeholder=""
-  //                 name="date"
-  //                 value="${new Date(this._dueDate)}"
-  //               />
-  //             </label>
-  //           </fieldset>`;
-  // }
+  _onEnterHashTagRender(evt) {
+    if (evt.key === `Enter` && evt.target.nodeName === `INPUT`) {
+      evt.preventDefault();
+      const hashTagInput = this.getElement()
+        .querySelector(`.card__hashtag-input`);
+      if (hashTagInput.value !== `` && hashTagInput.value.length < HASHTAG_MAX_LENGTH) {
+        this._tags.add(hashTagInput.value);
+        const hashTag = new HashTag(hashTagInput.value);
+        hashTag.getElement().addEventListener(`click`, () => {
+          unrender(hashTag.getElement());
+        });
+        const hashTagWrap = this.getElement().querySelector(`.card__hashtag-list`);
+        render(hashTagWrap, hashTag.getElement());
+        hashTagInput.value = ``;
+      }
+    }
+  }
+
+  _onClickToggleDate() {
+    this._dateStatus = this.getElement().querySelector(`.card__date-status`);
+    switch (this._dateStatus.textContent.toLowerCase().trim()) {
+      case `yes`:
+        this._dateStatus.textContent = `no`;
+        const deadline = this.getElement()
+          .querySelector(`.card__date-deadline`);
+        deadline.querySelector(`.card__date`).value = ``;
+        unrender(deadline);
+        this.dueDate = Date.now();
+        break;
+      case `no`:
+        this._dateStatus.textContent = `yes`;
+        this._deadline = new Deadline(this._dueDate);
+        const elementBeforeDeadline = this.getElement()
+          .querySelector(`.card__date-deadline-toggle`);
+        render(elementBeforeDeadline, this._deadline.getTemplate(), `afterend`);
+        break;
+    }
+  }
+
+  _onChangeColor(evt) {
+    const elementClasses = this.getElement().classList;
+    elementClasses.remove(`card--${this._color}`);
+    this._color = evt.target.value;
+    elementClasses.add(`card--${evt.target.value}`);
+  }
 
   getTemplate() {
     return `<article class="card card--edit card--${this._color} ${Object.keys(this._repeatingDays).some((day) => this._repeatingDays[day]) ? `card--repeat` : ``}">
@@ -100,12 +130,9 @@ export class TaskEdit extends AbstractComponent {
           >${this._description}</textarea>
         </label>
       </div>
-
       <div class="card__settings">
         <div class="card__details">
           <div class="card__dates">
-
-
 ${this._dueDate === null ?
     `<button class="card__date-deadline-toggle" type="button">
               date: <span class="card__date-status">no</span>
@@ -124,11 +151,9 @@ ${this._dueDate === null ?
                 />
               </label>
             </fieldset>`}
-
             <button class="card__repeat-toggle" type="button">
               repeat:<span class="card__repeat-status">${this._repeatingDaysCheck() ? `yes` : `no`}</span>
             </button>
-
             <fieldset class="card__repeat-days">
               <div class="card__repeat-days-inner">
               ${this._repeatingDaysCheck() ? Object.keys(this._repeatingDays).map((day) =>`<input
@@ -192,9 +217,7 @@ ${this._dueDate === null ?
                for="color-${el}-${this._id}"
                class="card__color card__color--${el}"
                >${el}</label
-             >`
-  ).join(``)}
-
+             >`).join(``)}
           </div>
         </div>
       </div>

@@ -1,9 +1,17 @@
 import {AbstractComponent} from './abstract-component';
 
 export class Deadline extends AbstractComponent {
-  constructor({dueDate}) {
+  constructor(dueDate) {
     super();
     this._dueDate = dueDate;
+  }
+
+  _dateCheck() {
+    let date = new Date(this._dueDate);
+    if (this._dueDate === null || ``) {
+      date = new Date(Date.now());
+    }
+    return date;
   }
 
   getTemplate() {
@@ -14,7 +22,7 @@ export class Deadline extends AbstractComponent {
                   type="text"
                   placeholder=""
                   name="date"
-                  value="${new Date(this._dueDate)}"
+                  value="${this._dateCheck()}"
                 />
               </label>
             </fieldset>`;

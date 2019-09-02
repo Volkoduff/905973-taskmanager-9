@@ -1,7 +1,7 @@
 import {AbstractComponent} from './abstract-component';
 
 export class RepeatDays extends AbstractComponent {
-  constructor({repeatingDays, id}) {
+  constructor(repeatingDays, id) {
     super();
     this._repeatingDays = repeatingDays;
     this._id = id;
