@@ -11,7 +11,7 @@ export class TaskController {
     this._onChangeView = onChangeView;
     this._onTaskDelete = onTaskDelete;
     this._taskView = new Task(tasks);
-    this._taskEdit = new TaskEdit(this._tasks, this._index);
+    this._taskEdit = new TaskEdit(this._tasks, this._index, this._tasks);
     this.create();
   }
 
@@ -25,11 +25,11 @@ export class TaskController {
 
     this._taskEdit.getElement()
       .querySelector(`.card__date-deadline-toggle`)
-      .addEventListener(`click`, () => this._taskEdit._onClickToggleDate());
+      .addEventListener(`click`, () => this._taskEdit.onClickToggleDate());
 
     this._taskEdit.getElement()
       .querySelector(`.card__repeat-toggle`)
-      .addEventListener(`click`, () => this._taskEdit._onClickToggleRepeatDays());
+      .addEventListener(`click`, () => this._taskEdit.onClickToggleRepeatDays());
 
     this._taskView.getElement()
       .querySelector(`.card__btn--edit`)
@@ -70,11 +70,11 @@ export class TaskController {
       .querySelector(`.card__hashtag-input`);
 
     this._hashTagInput.addEventListener(`focus`, () => {
-      document.addEventListener(`keydown`, (evt) => this._taskEdit._onEnterHashTagRender(evt));
+      document.addEventListener(`keydown`, (evt) => this._taskEdit.onEnterHashTagRender(evt));
     });
 
     this._hashTagInput.addEventListener(`blur`, () => {
-      document.removeEventListener(`keydown`, (evt) => this._taskEdit._onEnterHashTagRender(evt));
+      document.removeEventListener(`keydown`, (evt) => this._taskEdit.onEnterHashTagRender(evt));
     });
 
     const onSubmit = (evt) => {
@@ -113,7 +113,9 @@ export class TaskController {
       .forEach((el) => el
         .addEventListener(`change`, (evt) => this._taskEdit._onChangeColor(evt))
       );
+
   }
+
 
   setDefaultView() {
     if (this._container.getElement().contains(this._taskEdit.getElement())) {

@@ -1,17 +1,21 @@
 import {AbstractComponent} from './abstract-component';
-
 import {Colors} from './data';
 import {Deadline} from "./deadline";
 import {RepeatDays} from "./repeat-days";
 import {HashTag} from "./hashtag";
 import {render, unrender} from "./utils";
+import flatpickr from "flatpickr";
+import "flatpickr/dist/flatpickr.min.css";
+import "flatpickr/dist/themes/light.css";
+import moment from "moment";
 
 const HASHTAG_MAX_LENGTH = 20;
 
 export class TaskEdit extends AbstractComponent {
-  constructor({description, tags, color, dueDate, repeatingDays, isFavorite, isArchive}, index) {
+  constructor({description, tags, color, dueDate, repeatingDays, isFavorite, isArchive}, index, tasks) {
     super();
     this._tags = tags;
+    this._tasks = tasks;
     this._color = color;
     this._description = description;
     this._dueDate = dueDate;
@@ -19,6 +23,18 @@ export class TaskEdit extends AbstractComponent {
     this._isFavorite = isFavorite;
     this._isArchive = isArchive;
     this._id = index;
+    this.init();
+  }
+
+  init() {
+    if (this.getElement().querySelector(`.card__date`)) {
+      flatpickr(this.getElement().querySelector(`.card__date`), {
+        altInput: true,
+        altFormat: `j F`,
+        allowInput: false,
+        defaultDate: this._tasks.dueDate,
+      });
+    }
   }
 
   _repeatingDaysCheck() {
@@ -34,7 +50,7 @@ export class TaskEdit extends AbstractComponent {
     return result;
   }
 
-  _onClickToggleRepeatDays() {
+  onClickToggleRepeatDays() {
     this._repeatStatus = this.getElement().querySelector(`.card__repeat-status`);
     switch (this._repeatStatus.textContent.toLowerCase().trim()) {
       case `yes`:
@@ -54,7 +70,7 @@ export class TaskEdit extends AbstractComponent {
     }
   }
 
-  _onEnterHashTagRender(evt) {
+  onEnterHashTagRender(evt) {
     if (evt.key === `Enter` && evt.target.nodeName === `INPUT`) {
       evt.preventDefault();
       const hashTagInput = this.getElement()
@@ -72,7 +88,7 @@ export class TaskEdit extends AbstractComponent {
     }
   }
 
-  _onClickToggleDate() {
+  onClickToggleDate() {
     this._dateStatus = this.getElement().querySelector(`.card__date-status`);
     switch (this._dateStatus.textContent.toLowerCase().trim()) {
       case `yes`:
@@ -81,7 +97,7 @@ export class TaskEdit extends AbstractComponent {
           .querySelector(`.card__date-deadline`);
         deadline.querySelector(`.card__date`).value = ``;
         unrender(deadline);
-        this.dueDate = Date.now();
+        // this.dueDate = moment().format(`D MMMM`);
         break;
       case `no`:
         this._dateStatus.textContent = `yes`;
@@ -147,7 +163,7 @@ ${this._dueDate === null ?
                   type="text"
                   placeholder=""
                   name="date"
-                  value="${new Date(this._dueDate)}"
+                  value="${moment(this._dueDate).format(`D MMMM`)}"
                 />
               </label>
             </fieldset>`}
