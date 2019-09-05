@@ -105,6 +105,7 @@ export class TaskEdit extends AbstractComponent {
         const elementBeforeDeadline = this.getElement()
           .querySelector(`.card__date-deadline-toggle`);
         render(elementBeforeDeadline, this._deadline.getTemplate(), `afterend`);
+        this.init();
         break;
     }
   }
