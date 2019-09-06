@@ -5,6 +5,12 @@ import {LoadButton} from './../load-more-button';
 import {NoTask} from './../no-tasks';
 import {render, unrender} from './../utils';
 import {TaskController} from "./task-controller";
+const Mode = {
+  ADDING: `adding`,
+  DEFAULT: `default`,
+};
+
+const TaskControllerMode = Mode;
 
 const TaskConst = {
   EDIT_AMOUNT: 1,
@@ -18,12 +24,12 @@ export class BoardController {
     this._tasks = tasks;
     this._board = new Board();
     this._taskList = new TaskList();
-    this._sort = new Sort();
     this._loadButton = new LoadButton();
+    this._sort = new Sort();
     this._noTaskText = new NoTask();
     this._indexOfNextTaskRender = 0;
     this._isButtonRendered = false;
-
+    this._creatingTask = null;
     this._subscriptions = [];
     this._onDataChange = this._onDataChange.bind(this);
     this._onChangeView = this._onChangeView.bind(this);
@@ -37,6 +43,14 @@ export class BoardController {
     } else {
       this._renderBoard();
     }
+  }
+
+  hide() {
+    this._board.getElement().classList.add(`visually-hidden`);
+  }
+
+  show() {
+    this._board.getElement().classList.remove(`visually-hidden`);
   }
 
   _unRenderBoard() {
@@ -67,11 +81,6 @@ export class BoardController {
     render(this._board.getElement(), this._noTaskText.getElement());
   }
 
-  _renderTask(task, index) {
-    const taskController = new TaskController(this._taskList, task, index, this._onDataChange, this._onChangeView, this._onTaskDelete);
-    this._subscriptions.push(taskController.setDefaultView.bind(taskController));
-  }
-
   _onTaskDelete() {
     unrender(this._taskList.getElement());
     this._taskList.removeElement();
@@ -84,8 +93,21 @@ export class BoardController {
     this._subscriptions.forEach((it) => it());
   }
 
-  _onDataChange(newData, oldData) {
-    this._tasks[this._tasks.findIndex((it) => it === oldData)] = newData;
+  _onDataChange(newData, oldData, isCreating) {
+    if (!isCreating) {
+      this._creatingTask = isCreating;
+    }
+
+    const index = this._tasks.findIndex((task) => task === oldData);
+    if (newData === null && index !== -1) {
+      this._tasks = [...this._tasks.slice(0, index), ...this._tasks.slice(index + 1)];
+      this._showedTasks = Math.min(this._showedTasks, this._tasks.length);
+    } else if (oldData === null) {
+      this._creatingTask = null;
+      this._tasks = [newData, ...this._tasks];
+    } else {
+      this._tasks[index] = newData;
+    }
     this._renderBoard(this._tasks);
   }
 
@@ -105,7 +127,6 @@ export class BoardController {
       return;
     }
     this._taskList.getElement().innerHTML = ``;
-
     switch (evt.target.dataset.sortType) {
       case `date-up`:
         if (this._ifTooMuchTasks) {
@@ -162,6 +183,35 @@ export class BoardController {
         }
         break;
     }
+  }
+
+  _renderTask(task, index) {
+    const taskController = new TaskController(this._taskList, task, index, this._onDataChange, this._onChangeView, this._onTaskDelete, TaskControllerMode.DEFAULT);
+    this._subscriptions.push(taskController.setDefaultView.bind(taskController));
+  }
+
+  createTask() {
+    if (this._creatingTask) {
+      return;
+    }
+    const defaultTask = {
+      description: `Task description`,
+      dueDate: new Date(),
+      tags: new Set(),
+      color: [],
+      repeatingDays: {
+        'mo': false,
+        'tu': false,
+        'we': false,
+        'th': false,
+        'fr': false,
+        'sa': false,
+        'su': false,
+      },
+      isFavorite: false,
+      isArchive: false,
+    };
+    this._creatingTask = new TaskController(this._taskList, defaultTask, null, this._onDataChange, this._onChangeView, this._onTaskDelete, TaskControllerMode.ADDING, this._creatingTask);
   }
 
   _renderLoadButton() {

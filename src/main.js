@@ -1,29 +1,53 @@
-import {getMenuMarkup} from './components/menu';
-import {getSearchMarkup} from './components/search';
-import {getFilterWrapMarkup} from './components/filter-wrap';
-import {getFilterMarkup} from './components/filter';
 import {BoardController} from './components/controllers/board-controller';
 import {taskFilters, tasksData} from './components/data';
+import {render} from './components/utils';
+import {SiteMenu} from './components/menu';
+import {Statistic} from './components/statistic';
+import {Search} from './components/search';
+import {Filter} from './components/filter';
 
-const componentRendering = (container, markup, position = `beforeend`) => {
-  container.insertAdjacentHTML(position, markup);
-};
-
-const filterRender = (container, data) => {
-  container.insertAdjacentHTML(`beforeend`, data
-    .map(getFilterMarkup)
-    .join(``));
+const ControlId = {
+  tasksId: `control__task`,
+  statisticId: `control__statistic`,
+  newTaskId: `control__new-task`,
 };
 
 const menuContainer = document.querySelector(`.control`);
-componentRendering(menuContainer, getMenuMarkup());
-
 const mainContainer = document.querySelector(`.main`);
-componentRendering(mainContainer, getSearchMarkup());
-componentRendering(mainContainer, getFilterWrapMarkup());
+const siteMenu = new SiteMenu();
+const search = new Search();
+const statistics = new Statistic();
 
-const mainFilterContainer = document.querySelector(`.main__filter`);
-filterRender(mainFilterContainer, taskFilters);
+const filter = new Filter(taskFilters);
+render(menuContainer, siteMenu.getElement());
+render(mainContainer, search.getElement());
 
+render(mainContainer, filter.getElement());
 const boardController = new BoardController(mainContainer, tasksData());
 boardController.init();
+
+render(mainContainer, statistics.getElement());
+statistics.getElement().classList.add(`visually-hidden`);
+
+siteMenu.getElement().addEventListener(`change`, (evt) => {
+  evt.preventDefault();
+
+  if (evt.target.tagName !== `INPUT`) {
+    return;
+  }
+  switch (evt.target.id) {
+    case ControlId.tasksId:
+
+      statistics.getElement().classList.add(`visually-hidden`);
+      boardController.show();
+      break;
+    case ControlId.statisticId:
+      boardController.hide();
+      statistics.getElement().classList.remove(`visually-hidden`);
+      break;
+    case ControlId.newTaskId:
+      boardController.createTask();
+      siteMenu.getElement().querySelector(`#${ControlId.tasksId}`).checked = true;
+      break;
+  }
+});

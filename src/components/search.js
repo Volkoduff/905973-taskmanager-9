@@ -1,5 +1,12 @@
-export const getSearchMarkup = () =>
-  `<section class="main__search search container">
+import {AbstractComponent} from './abstract-component';
+
+export class Search extends AbstractComponent {
+  constructor() {
+    super();
+  }
+
+  getTemplate() {
+    return `<section class="main__search search container">
     <input
       type="text"
       id="search__input"
@@ -8,3 +15,5 @@ export const getSearchMarkup = () =>
     />
     <label class="visually-hidden" for="search__input">Search</label>
   </section>`;
+  }
+}

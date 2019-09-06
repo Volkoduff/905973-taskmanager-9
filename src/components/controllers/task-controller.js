@@ -1,24 +1,44 @@
 import {Task} from './../task';
 import {TaskEdit} from './../task-edit';
 import {render, unrender} from "../utils";
+import moment from "moment";
+
+const Mode = {
+  ADDING: `adding`,
+  DEFAULT: `default`,
+};
 
 export class TaskController {
-  constructor(container, tasks, index, onDataChange, onChangeView, onTaskDelete) {
+  constructor(container, tasks, index, onDataChange, onChangeView, onTaskDelete, mode, isCreatingTask) {
     this._container = container;
     this._tasks = tasks;
     this._index = index;
+    this._isCreatingTask = isCreatingTask;
     this._onDataChange = onDataChange;
     this._onChangeView = onChangeView;
     this._onTaskDelete = onTaskDelete;
     this._taskView = new Task(tasks);
     this._taskEdit = new TaskEdit(this._tasks, this._index, this._tasks);
-    this.create();
+    this.create(mode);
   }
 
-  create() {
+  create(mode) {
+    let renderPosition = `beforeend`;
+    let currentView = this._taskView;
+    if (mode === Mode.ADDING) {
+      renderPosition = `afterbegin`;
+      currentView = this._taskEdit;
+    }
+
     const onEscKeyDown = (evt) => {
-      if (evt.key === `Escape`) {
-        this._container.getElement().replaceChild(this._taskView.getElement(), this._taskEdit.getElement());
+      if (evt.key === `Escape` || evt.key === `Esc`) {
+        if (mode === Mode.DEFAULT) {
+          if (this._container.getElement().contains(this._taskEdit.getElement())) {
+            this._container.getElement().replaceChild(this._taskView.getElement(), this._taskEdit.getElement());
+          }
+        } else if (mode === Mode.ADDING) {
+          this._container.getElement().removeChild(currentView.getElement());
+        }
         document.removeEventListener(`keydown`, onEscKeyDown);
       }
     };
@@ -53,8 +73,10 @@ export class TaskController {
 
     this._taskEdit.getElement().querySelector(`.card__delete`)
       .addEventListener(`click`, () => {
-        unrender(this._taskEdit.getElement());
-        this._taskEdit.removeElement();
+        if (this._isCreatingTask) {
+          this._isCreatingTask = null;
+        }
+        this._onDataChange(null, this._tasks, this._isCreatingTask);
         if (!this._container.getElement().children.length) {
           this._onTaskDelete();
         }
@@ -85,7 +107,7 @@ export class TaskController {
         description: formData.get(`text`),
         color: formData.get(`color`),
         tags: new Set(formData.getAll(`hashtag`)),
-        dueDate: formData.get(`date`),
+        dueDate: moment(formData.get(`date`)).valueOf(),
         repeatingDays: formData.getAll(`repeat`).reduce((acc, it) => {
           acc[it] = true;
           return acc;
@@ -99,14 +121,14 @@ export class TaskController {
           'su': false,
         }),
       };
-      this._onDataChange(entry, this._tasks);
+      this._onDataChange(entry, mode === Mode.DEFAULT ? this._tasks : null);
       document.removeEventListener(`keydown`, onEscKeyDown);
     };
 
     this._taskEdit.getElement()
       .querySelector(`.card__form`)
       .addEventListener(`submit`, onSubmit);
-    render(this._container.getElement(), this._taskView.getElement());
+    render(this._container.getElement(), currentView.getElement(), renderPosition);
 
     this._taskEdit.getElement()
       .querySelectorAll(`.card__color-input`)
