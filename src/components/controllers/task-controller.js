@@ -3,7 +3,7 @@ import {TaskEdit} from './../task-edit';
 import {render, unrender} from "../utils";
 import moment from "moment";
 
-const Mode = {
+export const Mode = {
   ADDING: `adding`,
   DEFAULT: `default`,
 };
@@ -33,11 +33,11 @@ export class TaskController {
     const onEscKeyDown = (evt) => {
       if (evt.key === `Escape` || evt.key === `Esc`) {
         if (mode === Mode.DEFAULT) {
-          if (this._container.getElement().contains(this._taskEdit.getElement())) {
-            this._container.getElement().replaceChild(this._taskView.getElement(), this._taskEdit.getElement());
+          if (this._container.contains(this._taskEdit.getElement())) {
+            this._container.replaceChild(this._taskView.getElement(), this._taskEdit.getElement());
           }
         } else if (mode === Mode.ADDING) {
-          this._container.getElement().removeChild(currentView.getElement());
+          this._container.removeChild(currentView.getElement());
         }
         document.removeEventListener(`keydown`, onEscKeyDown);
       }
@@ -55,7 +55,7 @@ export class TaskController {
       .querySelector(`.card__btn--edit`)
       .addEventListener(`click`, () => {
         this._onChangeView();
-        this._container.getElement().replaceChild(this._taskEdit.getElement(), this._taskView.getElement());
+        this._container.replaceChild(this._taskEdit.getElement(), this._taskView.getElement());
         document.addEventListener(`keydown`, onEscKeyDown);
       });
 
@@ -77,7 +77,7 @@ export class TaskController {
           this._isCreatingTask = null;
         }
         this._onDataChange(null, this._tasks, this._isCreatingTask);
-        if (!this._container.getElement().children.length) {
+        if (!this._container.children.length) {
           this._onTaskDelete();
         }
       });
@@ -128,7 +128,7 @@ export class TaskController {
     this._taskEdit.getElement()
       .querySelector(`.card__form`)
       .addEventListener(`submit`, onSubmit);
-    render(this._container.getElement(), currentView.getElement(), renderPosition);
+    render(this._container, currentView.getElement(), renderPosition);
 
     this._taskEdit.getElement()
       .querySelectorAll(`.card__color-input`)
@@ -140,8 +140,8 @@ export class TaskController {
 
 
   setDefaultView() {
-    if (this._container.getElement().contains(this._taskEdit.getElement())) {
-      this._container.getElement().replaceChild(this._taskView.getElement(), this._taskEdit.getElement());
+    if (this._container.contains(this._taskEdit.getElement())) {
+      this._container.replaceChild(this._taskView.getElement(), this._taskEdit.getElement());
     }
   }
 
