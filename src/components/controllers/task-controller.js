@@ -99,9 +99,13 @@ export class TaskController {
       document.removeEventListener(`keydown`, (evt) => this._taskEdit.onEnterHashTagRender(evt));
     });
 
+    [...this._taskEdit.getElement().querySelectorAll(`.card__btn`)]
+      .forEach((el) => el.addEventListener(`click`, (evt) => evt.target.classList.toggle(`card__btn--disabled`)));
+
     const onSubmit = (evt) => {
       evt.preventDefault();
-      const formData = new FormData(this._taskEdit.getElement().querySelector(`.card__form`));
+      const cardForm = this._taskEdit.getElement().querySelector(`.card__form`);
+      const formData = new FormData(cardForm);
       formData.getAll(`textarea`);
       const entry = {
         description: formData.get(`text`),
@@ -121,6 +125,12 @@ export class TaskController {
           'su': false,
         }),
       };
+      // eslint-disable-next-line no-unused-expressions
+      cardForm.querySelector(`.card__btn--favorites`)
+        .classList.contains(`card__btn--disabled`) ? entry.isFavorite = false : entry.isFavorite = true;
+      // eslint-disable-next-line no-unused-expressions
+      cardForm.querySelector(`.card__btn--archive`)
+        .classList.contains(`card__btn--disabled`) ? entry.isArchive = false : entry.isArchive = true;
       this._onDataChange(entry, mode === Mode.DEFAULT ? this._tasks : null);
       document.removeEventListener(`keydown`, onEscKeyDown);
     };
@@ -137,7 +147,6 @@ export class TaskController {
       );
 
   }
-
 
   setDefaultView() {
     if (this._container.contains(this._taskEdit.getElement())) {

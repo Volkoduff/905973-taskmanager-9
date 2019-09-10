@@ -3,8 +3,6 @@ import {AbstractComponent} from './abstract-component';
 export class SearchResult extends AbstractComponent {
   constructor() {
     super();
-    // this._title = title;
-    // this._count = count;
   }
 
   getTemplate() {

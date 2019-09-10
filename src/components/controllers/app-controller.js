@@ -42,9 +42,6 @@ export class AppController {
   _statisticShow() {
     this._statistics.getElement().classList.remove(`visually-hidden`);
   }
-  _statisticHide() {
-    this._statistics.getElement().classList.add(`visually-hidden`);
-  }
 
   _componentSwitcher(evt) {
     evt.preventDefault();
@@ -53,7 +50,7 @@ export class AppController {
     }
     switch (evt.target.id) {
       case ControlId.tasksId:
-        this._statisticHide();
+        this._statistics.hide();
         this.searchController.hide();
         this.boardController.show(this.boardController.tasks);
         break;
@@ -71,12 +68,12 @@ export class AppController {
     }
   }
   _showSearch() {
-    this._statistics.getElement().classList.add(`visually-hidden`);
+    this._statistics.hide();
     this.boardController.hide();
     this.searchController.show(this.boardController.tasks);
   }
   onSearchBackButtonClick() {
-    this._statistics.getElement().classList.add(`visually-hidden`);
+    this._statistics.hide();
     this.searchController.hide();
     this.boardController.show(this.boardController.tasks);
   }

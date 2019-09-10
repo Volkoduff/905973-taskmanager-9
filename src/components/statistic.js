@@ -5,6 +5,10 @@ export class Statistic extends AbstractComponent {
     super();
   }
 
+  hide() {
+    this.getElement().classList.add(`visually-hidden`);
+  }
+
   getTemplate() {
     return `<section class="statistic container">
         <div class="statistic__line">

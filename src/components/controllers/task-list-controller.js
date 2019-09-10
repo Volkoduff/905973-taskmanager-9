@@ -63,8 +63,8 @@ export class TaskListController {
     this._subscriptions.forEach((it) => it());
   }
 
-  _onDataChange(newData, oldData, isCreating) {
-    this._creatingTask = isCreating;
+  _onDataChange(newData, oldData) {
+    this._creatingTask = null;
     this._onDataChangeMain(newData, oldData);
   }
 }

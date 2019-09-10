@@ -111,7 +111,6 @@ export class BoardController {
           this._taskListController.setTasks(this._tasks
             .sort((a, b) => a.dueDate - b.dueDate)
             .slice(0, TaskConst.TASKS_TO_DISPLAY));
-
           this._renderButtonIfNotRendered();
         } else {
           this._taskListController.setTasks(this._tasks

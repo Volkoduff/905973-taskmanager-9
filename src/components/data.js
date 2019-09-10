@@ -80,5 +80,5 @@ export const taskFilters = [{
   filter: () => RandomFn.getRandomBoolean(),
 }];
 
-export let tasksData = () => Array.from({length: TASKS_AMOUNT}, getTaskData);
+export const tasksData = () => Array.from({length: TASKS_AMOUNT}, getTaskData);
 counterForFilter(taskFilters, tasksData());
