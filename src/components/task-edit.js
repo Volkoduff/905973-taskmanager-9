@@ -50,22 +50,26 @@ export class TaskEdit extends AbstractComponent {
     return result;
   }
 
+  _renderRepeatDaysComponent() {
+    this._repeatDays = new RepeatDays(this._repeatingDays, this._id);
+    const datesWrap = this.getElement()
+      .querySelector(`.card__dates`);
+    render(datesWrap, this._repeatDays.getElement());
+  }
+
   onClickToggleRepeatDays() {
-    this._repeatStatus = this.getElement().querySelector(`.card__repeat-status`);
-    switch (this._repeatStatus.textContent.toLowerCase().trim()) {
+    this._repeatStatusElement = this.getElement().querySelector(`.card__repeat-status`);
+    switch (this._repeatStatusElement.textContent.toLowerCase().trim()) {
       case `yes`:
-        this._repeatStatus.textContent = `no`;
+        this._repeatStatusElement.textContent = `no`;
         const repeatDays = this.getElement()
           .querySelector(`.card__repeat-days`);
         unrender(repeatDays);
         this.dueDate = ``;
         break;
       case `no`:
-        this._repeatStatus.textContent = `yes`;
-        this._repeatDays = new RepeatDays(this._repeatingDays, this._id);
-        const datesWrap = this.getElement()
-          .querySelector(`.card__dates`);
-        render(datesWrap, this._repeatDays.getElement());
+        this._repeatStatusElement.textContent = `yes`;
+        this._renderRepeatDaysComponent();
         break;
     }
   }
@@ -105,6 +109,7 @@ export class TaskEdit extends AbstractComponent {
         const elementBeforeDeadline = this.getElement()
           .querySelector(`.card__date-deadline-toggle`);
         render(elementBeforeDeadline, this._deadline.getTemplate(), `afterend`);
+        this.init();
         break;
     }
   }
@@ -170,9 +175,8 @@ ${this._dueDate === null ?
             <button class="card__repeat-toggle" type="button">
               repeat:<span class="card__repeat-status">${this._repeatingDaysCheck() ? `yes` : `no`}</span>
             </button>
-            <fieldset class="card__repeat-days">
-              <div class="card__repeat-days-inner">
-              ${this._repeatingDaysCheck() ? Object.keys(this._repeatingDays).map((day) =>`<input
+            ${this._repeatingDaysCheck() ? `<fieldset class="card__repeat-days">
+              <div class="card__repeat-days-inner">${Object.keys(this._repeatingDays).map((day) =>`<input
               class="visually-hidden card__repeat-day-input"
               type="checkbox"
               id="repeat-${day}-${this._id}"
@@ -182,9 +186,9 @@ ${this._dueDate === null ?
               >
             <label class="card__repeat-day" for="repeat-${day}-${this._id}"
               >${day}</label
-            >`).join(``) : `` }
+            >`).join(``)}
               </div>
-            </fieldset>
+            </fieldset>` : ``}
           </div>
 
           <div class="card__hashtag">

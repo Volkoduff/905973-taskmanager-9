@@ -1,5 +1,8 @@
-export const getMenuMarkup = () =>
-  `<section class="control__btn-wrap">
+import {AbstractComponent} from './abstract-component';
+
+export class SiteMenu extends AbstractComponent {
+  getTemplate() {
+    return `<section class="control__btn-wrap">
     <input
       type="radio"
       name="control"
@@ -27,3 +30,5 @@ export const getMenuMarkup = () =>
       >STATISTICS</label
     >
   </section>`;
+  }
+}

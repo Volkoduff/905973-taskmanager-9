@@ -1,5 +1,5 @@
 const MAX_TAGS = 3;
-const TASKS_AMOUNT = 10;
+const TASKS_AMOUNT = 11;
 
 export const Colors = [`black`,
   `yellow`,

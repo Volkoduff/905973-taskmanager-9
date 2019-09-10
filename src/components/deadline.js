@@ -1,23 +1,10 @@
 import {AbstractComponent} from './abstract-component';
-import flatpickr from "flatpickr";
-import "flatpickr/dist/flatpickr.min.css";
-import "flatpickr/dist/themes/light.css";
 import moment from "moment";
 
 export class Deadline extends AbstractComponent {
   constructor(dueDate) {
     super();
     this._dueDate = dueDate;
-    this.init();
-  }
-
-  init() {
-    flatpickr(this.getElement().querySelector(`.card__date`), {
-      altInput: true,
-      altFormat: `j F`,
-      allowInput: false,
-      defaultDate: this.dueDate,
-    });
   }
 
   _dateCheck() {
