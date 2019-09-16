@@ -1,14 +1,27 @@
 import {AbstractComponent} from './abstract-component';
+import {taskFilters} from './data';
+
 
 export class Filter extends AbstractComponent {
-  constructor(filter) {
+  constructor() {
     super();
-    this._filter = filter;
+    this._taskFilters = taskFilters;
+  }
+
+  init(tasks) {
+    this._taskFilters = taskFilters;
+    this._counterForFilter(this._taskFilters, tasks);
+  }
+
+  _counterForFilter(filters, tasks) {
+    for (const el of filters) {
+      el.count = tasks.filter(el.filter).length;
+    }
   }
 
   getTemplate() {
     return `<section class="main__filter filter container">
-${this._filter.map((input) => `<input
+${this._taskFilters.map((input) => `<input
       type="radio"
       id="filter__all"
       class="filter__input visually-hidden"

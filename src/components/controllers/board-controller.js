@@ -1,6 +1,8 @@
 import {TaskList} from './../task-list';
 import {Board} from './../board';
 import {Sort} from './../sort';
+import {Filter} from './../filter';
+// import {FilterWrap} from './../filter-wrap';
 import {LoadButton} from './../load-more-button';
 import {NoTask} from './../no-tasks';
 import {render, unrender} from './../utils';
@@ -18,6 +20,7 @@ export class BoardController {
     this._tasks = [];
     this._board = new Board();
     this._taskList = new TaskList();
+    this._filter = new Filter();
     this._loadButton = new LoadButton();
     this._sort = new Sort();
     this._noTaskText = new NoTask();
@@ -30,6 +33,8 @@ export class BoardController {
   init() {
     render(this._container, this._board.getElement());
     this._renderBoard();
+
+
   }
 
   hide() {
@@ -86,6 +91,16 @@ export class BoardController {
       this._tasks[index] = newData;
     }
     this._renderBoard();
+    this._reRenderFilter();
+  }
+
+  _reRenderFilter() {
+    unrender(document.querySelector(`.main__filter`));
+    unrender(this._filter.getElement());
+    this._filter.removeElement();
+
+    this._filter.init(this._tasks);
+    render(this._board.getElement(), this._filter.getElement(), `beforebegin`);
   }
   _renderButtonIfNotRendered() {
     if (!this._isButtonRendered) {
