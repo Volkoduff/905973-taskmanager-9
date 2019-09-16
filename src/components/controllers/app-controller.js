@@ -1,5 +1,5 @@
 import {BoardController} from './../controllers/board-controller';
-import {taskFilters, tasksData} from './../data';
+import {tasksData} from './../data';
 import {render} from './../utils';
 import {SiteMenu} from './../menu';
 import {Statistic} from './../statistic';
@@ -19,16 +19,15 @@ export class AppController {
     this._mainContainer = mainContainer;
     this._siteMenu = new SiteMenu();
     this._search = new Search();
-    this._statistics = new Statistic();
-    this._filter = new Filter(taskFilters);
+    this._filter = new Filter();
   }
 
   init() {
     render(this._menuContainer, this._siteMenu.getElement());
     render(this._mainContainer, this._search.getElement());
+
+    this._filter.init(tasksData());
     render(this._mainContainer, this._filter.getElement());
-    render(this._mainContainer, this._statistics.getElement());
-    this._statistics.getElement().classList.add(`visually-hidden`);
 
     this.boardController = new BoardController(this._mainContainer);
     this.boardController.show(tasksData());
@@ -37,10 +36,14 @@ export class AppController {
 
     this.searchController = new SearchController(this._mainContainer, this._search, this.onSearchBackButtonClick.bind(this), this.boardController._onDataChange.bind(this.boardController), this.boardController.tasks);
     this._search.getElement().addEventListener(`click`, () => this._showSearch());
+
+    this.statistics = new Statistic(this.boardController.tasks);
+    render(this._mainContainer, this.statistics.getElement());
+    this.statistics.getElement().classList.add(`visually-hidden`);
   }
 
   _statisticShow() {
-    this._statistics.getElement().classList.remove(`visually-hidden`);
+    this.statistics.getElement().classList.remove(`visually-hidden`);
   }
 
   _componentSwitcher(evt) {
@@ -50,7 +53,7 @@ export class AppController {
     }
     switch (evt.target.id) {
       case ControlId.tasksId:
-        this._statistics.hide();
+        this.statistics.hide();
         this.searchController.hide();
         this.boardController.show(this.boardController.tasks);
         break;
@@ -58,8 +61,10 @@ export class AppController {
         this.boardController.hide();
         this.searchController.hide();
         this._statisticShow();
+        this.statistics.init(this.boardController.tasks);
         break;
       case ControlId.newTaskId:
+        this.statistics.hide();
         this.searchController.hide();
         this.boardController.show(this.boardController.tasks);
         this.boardController.createTask();
@@ -68,12 +73,12 @@ export class AppController {
     }
   }
   _showSearch() {
-    this._statistics.hide();
+    this.statistics.hide();
     this.boardController.hide();
     this.searchController.show(this.boardController.tasks);
   }
   onSearchBackButtonClick() {
-    this._statistics.hide();
+    this.statistics.hide();
     this.searchController.hide();
     this.boardController.show(this.boardController.tasks);
   }

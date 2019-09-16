@@ -13,10 +13,10 @@ export const render = (container, element, place = `beforeend`) => {
       container.append(element);
       break;
     case `beforebegin`:
-      container.insertAdjacentHTML(`beforebegin`, element);
+      container.before(element);
       break;
     case `afterend`:
-      container.insertAdjacentHTML(`afterend`, element);
+      container.after(element);
       break;
   }
 };

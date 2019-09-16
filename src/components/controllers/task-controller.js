@@ -13,7 +13,7 @@ export class TaskController {
     this._container = container;
     this._tasks = tasks;
     this._index = index;
-    this._isCreatingTask = isCreatingTask;
+    this._isCreatingTask = isCreatingTask; // Убрать Везде
     this._onDataChange = onDataChange;
     this._onChangeView = onChangeView;
     this._onTaskDelete = onTaskDelete;

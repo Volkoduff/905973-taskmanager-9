@@ -31,12 +31,6 @@ const RandomFn = {
   getRandomWeekDayMarker: (task) => Object.keys(task.repeatingDays).some((day) => task.repeatingDays[day])
 };
 
-const counterForFilter = (filters, tasks) => {
-  for (const el of filters) {
-    el.count = tasks.filter(el.filter).length;
-  }
-};
-
 export const getTaskData = () => ({
   description: RandomFn.getRandomElementFromArray(TaskTitles),
   dueDate: Date.now() + RandomFn.getRandomWeekTime(),
@@ -81,4 +75,3 @@ export const taskFilters = [{
 }];
 
 export const tasksData = () => Array.from({length: TASKS_AMOUNT}, getTaskData);
-counterForFilter(taskFilters, tasksData());
